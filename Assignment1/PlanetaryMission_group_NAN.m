@@ -32,4 +32,4 @@ addpath(genpath(currentPath));
 % functions path
 addpath(genpath('functions'))
 
-%%
+%% CALCULATIONS
