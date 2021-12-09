@@ -31,7 +31,7 @@ rr_mat = Y(:,1:3);
 
 thetaG_vect = wrapTo2Pi( greenwich0 - om_E*t_span );
 
-lon = rad2deg( wrapTo2Pi( atan2(m,l) + thetaG_vect' )-pi ) ; % THIS IS WRONG 
+lon = rad2deg( wrapTo2Pi( atan2(m,l)+ thetaG_vect' )-pi) ; % THIS IS WRONG BY 180 degrees
 
 lat = rad2deg( delta ); % vector of latitudes
 
