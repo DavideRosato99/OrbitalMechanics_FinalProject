@@ -1,12 +1,12 @@
 % ADD earth image
-a=26600; 
-e=0.74; 
-i=deg2rad(63.4);
-Om=deg2rad(50); 
-om=deg2rad(280); 
-theta_0=deg2rad(0);
+a=8350; 
+e=0.1976;
+i=deg2rad(60); 
+Om=deg2rad(270);
+om=deg2rad(45); 
+theta_0=deg2rad(230);
 greenwich0 = deg2rad(0);
-n_orb=30;
+n_orb=3.25;
 mu=astroConstants(13);
 [r_vect, v_vect] = kep2car(a,e,i,Om,om,theta_0,mu);
 
