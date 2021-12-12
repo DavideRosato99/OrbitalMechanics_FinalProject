@@ -1,4 +1,4 @@
-function dx = ode_2bpTLEs(t,x,mu,TLEs)
+function dx = ode_2bp(t,x,mu)
 % ode_2bp - Ode function to compute the motion of the satellite in an
 % unperturbed orbit and keep track of other objects orbiting the Earth
 % through TLEs.
@@ -10,12 +10,13 @@ function dx = ode_2bpTLEs(t,x,mu,TLEs)
 %   t        double  [1x1]   time                                 [s]
 %   x        double  [6x1]   state vector               [km and km/s]
 %   mu       double  [1x1]   gravitational parameter       [km^3/s^2]
-%   satData  table  [Nx16] TLEs table                             [-]
 %
 % OUTPUT:
 %   dx       double [6x1]   state vector derivative              [-]
 %
-% CALLED FUNCTIONS: SGP8
+% CALLED FUNCTIONS: -
+%
+% NOTE: time can be omitted
 %
 % CONTRIBUTORS:
 %   Rosato Davide               10618468
@@ -28,6 +29,9 @@ function dx = ode_2bpTLEs(t,x,mu,TLEs)
 %
 % -------------------------------------------------------------------------
 
-    r = norm(x);
-    dx = [x(4:6); -mu/(r^3)*x(1:3)];
+%% COMPUTE STATE VECTOR DERIVATIVE
+r = norm(x(1:3));
+dx = [x(4:6); -mu/(r^3)*x(1:3)];
+
+
 end

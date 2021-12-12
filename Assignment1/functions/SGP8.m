@@ -15,6 +15,8 @@ function [pos, vel] = SGP8(year, fracDay, satdata)
 %   pos      double [Nx3]  Position vector (TEME reference frame)    [km]
 %   vel      double [Nx3]  Velocity vector (TEME reference frame)    [km/s]
 %
+% CALLED FUNCTIONS. astroConstants
+%
 % NOTE: Year must be greater or equal to 2000
 %
 % CONTRIBUTORS:
@@ -32,6 +34,7 @@ function [pos, vel] = SGP8(year, fracDay, satdata)
 %
 % -------------------------------------------------------------------------
 
+warning off
 
 %% PRE-CALCULATION ALLOCATION
 N = size(satdata, 1);
@@ -54,9 +57,9 @@ ActYear = mod(year, 100);
 
 %% LOOP FOR EACH TLE
 for ind = 1:N
-    TLEyear = (satData.epoch(ind) - mod(satData.epoch(ind), 1000)) / 1000;
+    TLEyear = (satdata.epoch(ind) - mod(satdata.epoch(ind), 1000)) / 1000;
     yearSince = ActYear - TLEyear;
-    TLEday = mod(satData.epoch(ind), 1000);
+    TLEday = mod(satdata.epoch(ind), 1000);
     daySince = fracDay - TLEday;
     tsince = yearSince*365*24*60 + daySince*24*60;
     
@@ -164,13 +167,18 @@ for ind = 1:N
         edot = -(2.0/3.0) * n0dot * (1.0 - satdata.e0(ind)) / noii;
         e = satdata.e0(ind) + edot * tsince;
         Z1 = 0.5 * n0dot * (tsince^2);
+        if Z1 < 0 || e > 1
+            flag = true;
+            pos(ind, 1:3) = nan(1, 3);
+            vel(ind, 1:3) = nan(1, 3);
+        end
     else
         n = noii + nd * (1.0 - ((1.0 - gamma * tsince)^p));
         edot = e0dot;
         e = satdata.e0(ind) + ed * (1.0 - ((1.0 - gamma * tsince)^q));
         Z1 = gamma * tsince;
         Z1 = 1.0 - Z1;
-        if Z1 < 0
+        if Z1 < 0 || e > 1
             flag = true;
             pos(ind, 1:3) = nan(1, 3);
             vel(ind, 1:3) = nan(1, 3);
@@ -182,7 +190,7 @@ for ind = 1:N
             Z1 = Z1 * n0dot / (p * gamma);
         end
     end
-    
+
     if not(flag)
         omega = satdata.omega0(ind) + omegadot * tsince + (7.0 * Z1) / (3.0 * noii) * omega1dot;
         xnode = satdata.xnode0(ind) + xnodedot * tsince + xnode1dot * (7.0 * Z1)/(3.0 * noii);
