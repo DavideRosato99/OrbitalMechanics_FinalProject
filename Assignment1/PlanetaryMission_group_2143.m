@@ -17,6 +17,7 @@ close all
 clear all
 clc
 set(0, 'defaultTextInterpreter', 'latex')
+set(groot, 'defaultTextInterpreter', 'latex')
 
 
 %% SET PATH
@@ -45,12 +46,12 @@ load(strcat(pwd, '/functions/initialize/NORAD_TLEs.mat'))
 
 %% SETTINGS
 %%% FIND OPTIMAL RAAN AND OM
-date = datetime('now');       % [-] Date time of the starting of orbit propagation
+date = datetime([2021 12 25 12 0 0]);       % [-] Date time of the starting of orbit propagation
 nPeriod = 10;                 % [-] Number of periods the orbit is propagated for
-deltaPeriod = 24*60*60;       % [s] Delta period for TLEs parsing
-nPoints = 100;               % [-] Number of points for each period at which coordinates are computed
-nOM = 360;                     % [-] Number of RAAN that are calculated to find the optimal value
-nom = 360;                     % [-] Number of omega that are calculated to find the optimal value
+deltaPeriod = 1*24*60*60;       % [s] Delta period for TLEs parsing
+nPoints = 100;                % [-] Number of points for each period at which coordinates are computed
+nOM = 30;                     % [-] Number of RAAN that are calculated to find the optimal value
+nom = 30;                     % [-] Number of omega that are calculated to find the optimal value
 
 
 %% USED CONSTANTS
@@ -180,7 +181,7 @@ end
 
 
 %% PLOT ------------------------------------------------------------------
-figure
+figure('Name','Satellite distance from TLEs','NumberTitle','off');
 [OMM, OM] = meshgrid(rad2deg(OmLoop), rad2deg(omLoop));
 surf(OMM, OM, MINdis'); hold on;
 shading interp
@@ -190,7 +191,7 @@ BEST = max(max(MINdis));
 plot3(OmLoop(i1)*180/pi, omLoop(i2)*180/pi, BEST, 'ro')
 fprintf('\nOPTIMAL OM and om:\nOM = %.2f\nom = %.2f\n\n', OmLoop(i1)*180/pi, omLoop(i2)*180/pi)
 
-figure
+figure('Name','Satellite distance from TLEs - exponential','NumberTitle','off');
 [OMM, OM] = meshgrid(rad2deg(OmLoop), rad2deg(omLoop));
 surf(OMM, OM, MINdisMod'); hold on;
 shading interp
@@ -204,9 +205,7 @@ Yorbit = Yorb{(i1-1)*J + i2};
 
 
 %%
-
-
-figure
+figure('Name','Best orbit evolution','NumberTitle','off');
 [rteme, vteme] = SGP8(Y, D + hms2fracday(H, M, S), NORAD_TLEs(indexes,:));
 p = plot3(rteme(:, 1), rteme(:, 2), rteme(:, 3), 'go', 'MarkerSize', 1);
 axis equal; hold on; grid on
