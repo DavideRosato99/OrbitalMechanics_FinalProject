@@ -1,4 +1,4 @@
-function [Xdot] = our_pertdyn2bp(t,X,mu_earth,earth_radius,J2,date)
+function [Xdot] = our_pertdyn2bp(X,mu_earth,earth_radius,J2,date)
 
 % PROTOTYPE:
 %   [Xdot] = pertdyn2bp (t,X,mu_earth,earth_radius,J2,date)
@@ -20,8 +20,8 @@ function [Xdot] = our_pertdyn2bp(t,X,mu_earth,earth_radius,J2,date)
 Xdot = zeros(size(X));
 
 r = sqrt(X(1)^2+X(2)^2+X(3)^2);
-
-[r_Moon,~] = ephMoon(date+t/86400);
+% date(6) = date(6) + t;  
+[r_Moon,~] = ephMoon(date);
 
 apJ2_vect = j2peracc (X(1:3),J2,earth_radius,mu_earth);    % J2 perturbed acceleration vector
 apMG_vect = Moonper (r_Moon,X(1:3)');                      % Moon gravity perturbed acceleration vector

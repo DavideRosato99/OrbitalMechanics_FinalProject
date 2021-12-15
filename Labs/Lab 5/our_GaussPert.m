@@ -62,3 +62,4 @@ dom = 1/(e*v)*(2*sin(th)*ap_tnh(1)+(2*e+r/a*cos(th))*ap_tnh(2))- ...
 dth = h/r^2-1/(e*v)*(2*sin(th)*ap_tnh(1)+(2*e+r/a*cos(th))*ap_tnh(2));
 
 dkep = [da,de,di,dOM,dom,dth]';
+end

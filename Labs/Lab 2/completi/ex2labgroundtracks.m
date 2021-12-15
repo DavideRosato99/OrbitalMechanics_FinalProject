@@ -14,7 +14,7 @@ m=1;
 mu=astroConstants(13);
 kep=[ a e Om om i theta_0];
 [ra, dec, lon, lat] = Single_groundTrack_corretto(kep,   greenwich0,   n_orb,  mu)
-[a_rep,ra, dec, lon, lat] = R_groundTrack_corretto(kep,   greenwich0,   n_orb,  mu, m, k)
+[a_rep,ra, dec, lon, lat] = Repeating_groundTrack_corretto(kep,   greenwich0,   n_orb,  mu, m, k)
 
 %% Exercise 1.2
 a=26600; 
@@ -30,7 +30,7 @@ m=1;
 mu=astroConstants(13);
 kep=[ a e Om om i theta_0]
 [ra, dec, lon, lat] = Single_groundTrack_corretto(kep,   greenwich0,   n_orb,  mu)
-[a_rep,ra, dec, lon, lat] = R_groundTrack_corretto(kep,   greenwich0,   n_orb,  mu, m, k)
+[a_rep,ra, dec, lon, lat] = Repeating_groundTrack_corretto(kep,   greenwich0,   n_orb,  mu, m, k)
 
 
 %% Exercise 1.3a
