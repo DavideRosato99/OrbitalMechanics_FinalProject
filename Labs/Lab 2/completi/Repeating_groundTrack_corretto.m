@@ -1,4 +1,4 @@
-function [a_rep,ra, dec, lon, lat] = R_groundTrack_corretto(kep,   greenwich0,   n_orb,  mu, m, k)
+function [a_rep,ra, dec, lon, lat] = Repeating_groundTrack_corretto(kep,   greenwich0,   n_orb,  mu, m, k)
 %% 
 % all angles must be given in radiant 
 % missing the greenwich0 part

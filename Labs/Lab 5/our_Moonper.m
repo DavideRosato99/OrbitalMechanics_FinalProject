@@ -16,12 +16,10 @@ function [apMG_vect] = our_Moonper (r_moon_vect,r_vect)
 %   [apMG_vect]              Perturbed acceleration vector     
 
 
-mu_moon = 4903;  % Km^3/s^2
+mu_moon = astroConstants(20);  % Km^3/s^2
 r_ms_vect = r_moon_vect - r_vect;
-
 r_ms = norm(r_ms_vect);
-r_moon = norm(r_moon_vect);
 
-apMG_vect = mu_moon*(r_ms_vect/r_ms^3 -r_moon_vect/r_moon^3);
+apMG_vect = mu_moon*(r_ms_vect/r_ms^3);
 
 end
