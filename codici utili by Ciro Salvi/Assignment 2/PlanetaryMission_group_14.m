@@ -172,7 +172,7 @@ if moln_comparison
     
     Gauss_perturbed
     figure()
-        plot(T_Gauss/86400,filter_mov(kep_Gauss(:,1),T_Gauss, kep_Gauss,mu,3),Tmol_cut-time_start,kepmol_cut(:,1))
+        plot(T_Gauss/86400,filter_mov(kep_Gauss(:,1),T_Gauss, kep_Gauss,mu,3),Tmol_cut-timec_start,kepmol_cut(:,1))
         grid on
         xlabel ('time [days]')
         ylabel ('a [km]')
