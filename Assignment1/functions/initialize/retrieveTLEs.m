@@ -58,10 +58,6 @@
 %
 % -------------------------------------------------------------------------
 
-clear all
-close all
-clc
-
 
 %% SET THE URL FROM WHERE RETRIEVE
 url = {'https://www.celestrak.com/NORAD/elements/active.txt'
@@ -74,85 +70,179 @@ url = {'https://www.celestrak.com/NORAD/elements/active.txt'
    
    
 %% INITIALIZATION
-Name = '';
-Cnum = zeros(1, 1);
-SC = '';
-ID = '';
-year = zeros(1, 1);
-doy = zeros(1, 1);
-epoch = zeros(1, 1);
-TD1 = zeros(1, 1);
-TD2 = zeros(1, 1);
-ExTD2 = zeros(1, 1);
-BStar = zeros(1, 1);
-ExBStar = zeros(1, 1);
-Bstar = zeros(1, 1);
-Etype = '';
-Enum = zeros(1, 1);
-incl = zeros(1, 1);
-raan = zeros(1, 1);
-e = zeros(1, 1);
-omega = zeros(1, 1);
-M = zeros(1, 1);
-no = zeros(1, 1);
-a = zeros(1, 1);
-rNo = zeros(1, 1);
+satData = struct;
+N = size(url, 1);
+ctr = 0;
 
+year = zeros(1, 1);
+month = zeros(1, 1);
+day = zeros(1, 1);
+hr = zeros(1, 1);
+minute = zeros(1, 1);
+sec = zeros(1, 1);
 
 %% RETRIEVE DATA
-N = size(url, 1);
+% Constants
+xpdotp = 1440 / (2*pi);
+
 for i = 1:N
     % Read and divide into lines data
     rawData = splitlines(webread(url{i}));
-    M = size(rawData, 1);
-    ctr = length(Name);
-    for j = 1:M
+    S = size(rawData, 1);
+    for j = 1:S
         if not(isempty(strtrim(rawData{j})))
             
             if mod(j-1, 3) == 0 % Retrieve the name of the satellite
                 ctr = ctr + 1;
-                Name{ctr} = strtrim(rawData{j});
+                satData.Name{ctr} = strtrim(rawData{j});
                 
             elseif mod(j-2, 3) == 0 % Retrieve the first TLE line of the satellite
                 line1 = strtrim(rawData{j});
-                Cnum(ctr) = str2double(line1(3:7));
-                SC{ctr} = line1(8);
-                ID{ctr} = strtrim(line1(10:17));
-                epoch(ctr) = str2double(line1(19:32));
-                TD1(ctr) = str2double(line1(34:43));
-                TD2(ctr) = str2double(line1(45:50));
-                BStar(ctr) = str2double(line1(54:59));
-                ExBStar(ctr) = str2double(line1(60:61));
-                BStar(ctr) = BStar(ctr) * 1e-5 * 10^ExBStar(ctr);
-                Etype{ctr} = strtrim(line1(63));
+                for jj = 11:16
+                    if (line1(jj) == ' ')
+                        line1(jj) = '_';
+                    end
+                end
+                
+                if (line1(45) ~= ' ')
+                    line1(44) = line1(45);
+                end
+                line1(45) = '.';
+                
+                if (line1(8) == ' ')
+                    line1(8) = 'U';
+                end
+
+                if (line1(10) == ' ')
+                    line1(10) = '.';
+                end
+
+                for jj = 46:50
+                    if (line1(jj) == ' ')
+                        line1(jj) = '0';
+                    end
+                end
+                if (line1(52) == ' ')
+                    line1(52) = '0';
+                end
+                if (line1(54) ~= ' ')
+                    line1(53) = line1(54);
+                end
+                line1(54) = '.';
+                
+                if (line1(63) == ' ')
+                    line1(63) = '0';
+                end
+
+                if ((length(line1) < 68) || (line1(68) == ' '))
+                    line1(68) = '0';
+                end
+                
+                satData.satnum(ctr) = str2double(line1(3:7));
+                satData.classification{ctr} = line1(8);
+                satData.intldesg{ctr} = strtrim(line1(10:17));
+                satData.epochyr(ctr) = str2double(line1(19:20));
+                satData.epochdays(ctr) = str2double(line1(21:32));
+                satData.ndot(ctr) = str2double(line1(34:43));
+                satData.nddot(ctr) = str2double(line1(44:50));
+                satData.nexp(ctr) = str2double(line1(51:52));
+                satData.bstar(ctr) = str2double(line1(53:59));
+                satData.ibexp(ctr) = str2double(line1(60:61));
+                satData.elnum(ctr) = str2double(line1(65:68));
+                
+                satData.nddot(ctr) = satData.nddot(ctr) * 10^satData.nexp(ctr);
+                satData.bstar(ctr) = satData.bstar(ctr) * 10^satData.ibexp(ctr);
+                
+                satData.ndot(ctr) = satData.ndot(ctr) / (xpdotp * 1440);         % [rad/min^2]
+                satData.nddot(ctr) = satData.nddot(ctr) / (xpdotp * 1440 * 1440);  % [rad/min^3]
+                
+                year(ctr) = satData.epochyr(ctr) + 2000;
+                [month(ctr), day(ctr), hr(ctr), minute(ctr), sec(ctr)] = days2mdh(year(ctr), satData.epochdays(ctr));
+                satData.mjd2000satepoch(ctr) = date2mjd2000([year(ctr) month(ctr) day(ctr) hr(ctr) minute(ctr) sec(ctr)]);
                 
             elseif mod(j-3, 3) == 0 % Retrieve the second TLE line of the satellite
                 line2 = strtrim(rawData{j});
-                incl(ctr) = str2double(line2(9:16));
-                raan(ctr) = str2double(line2(18:25));
-                e(ctr) = str2double(strcat('0.', line2(27:33)));
-                omega(ctr) = str2double(line2(35:42));
-                M(ctr) = str2double(line2(44:51));
-                no(ctr) = str2double(line2(53:63));
-                rNo(ctr) = str2double(line2(65:end));
+                
+                line2(26) = '.';
+     
+                for jj = 27:33
+                    if (line2(jj) == ' ')
+                        line2(jj) = '0';
+                    end
+                end
+    
+                satData.inclo(ctr) = str2double(line2(8:16));
+                satData.nodeo(ctr) = str2double(line2(17:25));
+                satData.ecco(ctr) = str2double(line2(26:33));
+                satData.argpo(ctr) = str2double(line2(34:42));
+                satData.mo(ctr) = str2double(line2(43:51));
+                satData.no_kozai(ctr) = str2double(line2(52:63));
+                satData.revnum(ctr) = str2double(line2(64:68));
+                
+                satData.no_kozai(ctr) = satData.no_kozai(ctr) / xpdotp;
+                
+                satData.inclo(ctr) = satData.inclo(ctr) * pi/180;
+                satData.nodeo(ctr) = satData.nodeo(ctr) * pi/180;
+                satData.argpo(ctr) = satData.argpo(ctr) * pi/180;
+                satData.mo(ctr) = satData.mo(ctr) * pi/180;
+            
                 
             end
+            
+            
         end
     end
+    
 end
 
 
+%% INITIALIZE VARIABLES FOR SGP4/SDP4 MODEL
+[satData] = sgp4Init(satData, satData.mjd2000satepoch);
+
+
+
+
 %% SAVE DATA
-NORAD_TLEs = table(Name', epoch', Cnum', ID', SC', rNo', Etype', M'*(pi/180), ...
-    raan'*(pi/180), omega'*(pi/180), incl'*(pi/180), e', no'*(2*pi/1440), ...
-    TD1' * 1e-8 * (2*pi/(1440^2)), TD2' * (2*pi/(1440^3)), BStar');
-NORAD_TLEs.Properties.VariableNames = {'name', 'epoch', 'noradNumber', ...
-    'bulletinNumber', 'classification', 'revolutionNumber', ...
-    'ephemerisType', 'xm0', 'xnode0', 'omega0', 'xincl', 'e0', 'xn0', ...
-    'xndt20', 'xndd60', 'bstar'};
+NORAD_TLEs = table(Name', Cnum', SC', ID', epoch', days', TD1', TD2', BStar', ...
+    elnum', inclo', nodeo', ecco', argpo', no_kozai', revnum');
+NORAD_TLEs.Properties.VariableNames = {'Name', 'satnum', 'classification', ...
+    'intldesg', 'epochyr', 'epochdays', 'ndot', 'nddot', 'bstar', ...
+    'elnum', 'inclo', 'nodeo', 'ecco', 'argpo', 'no_kozai', 'revnum'};
 
 save NORAD_TLEs NORAD_TLEs
-clearvars
+
+
+
+%% FUNCTIONS
+function [mon, day, hr, minute, sec] = days2mdh(year, days)
+
+% Set up array od days in month
+lMonth = [31 28 31 30 31 30 31 31 30 31 30 31];
+dayOfYr = floor(days);
+
+% Find month and day of the month
+if rem(year - 1900, 4) == 0
+    lMonth(2)= 29;
+end
+
+i = 1;
+intTemp = 0;
+while ( dayOfYr > intTemp + lMonth(i) ) && ( i < 12 )
+    intTemp = intTemp + lMonth(i);
+    i = i+1;
+end
+
+mon = i;
+day = dayOfYr - intTemp;
+
+% Find hours minutes and seconds 
+temp = (days - dayOfYr )*24.0;
+hr  = floor(temp);
+temp = (temp - hr) * 60.0;
+minute = fix(temp);
+sec = floor((temp - minute) * 60.0);
+
+end
 
 
 

@@ -5,11 +5,14 @@
 % CONTRIBUTORS:
 %   Rosato Davide          10618468     davide.rosato@mail.polimi.it
 %   Saba Mohammadi Yengeje 10789462     saba.mohammadi@mail.polimi.it
-%   Spinelli jason         10618465     jason.spinelli@mail.polimi.it
+%   Spinelli Jason         10618465     jason.spinelli@mail.polimi.it
 %   Tagliati Alessia       10635119     alessia.tagliati@mail.polimi.it
 %
 % VERSIONS
 %   2021-10-21: Release
+%
+% Copyright © 2021, All rights reserved
+% SPDX-License-Identifier: GPL-3.0-or-later
 %
 % -------------------------------------------------------------------------
 
@@ -17,8 +20,6 @@ close all
 clear all
 clc
 set(0, 'defaultTextInterpreter', 'latex')
-set(groot, 'defaultTextInterpreter', 'latex')
-
 
 %% SET PATH
 % global path
@@ -35,28 +36,17 @@ addpath(genpath(currentPath));
 addpath(genpath('functions'))
 
 
-%% GEt TLEs
-% the following are performed in order to retrieve last-updated TLEs of
-% satellites, space stations and debris orbiting around Earth
-if not(exist(strcat(pwd, '/functions/initialize/NORAD_TLEs.mat'), 'file'))
-    retrieveTLEs;
-end
-load(strcat(pwd, '/functions/initialize/NORAD_TLEs.mat'))
-
-
 %% SETTINGS
 %%% FIND OPTIMAL RAAN AND OM
-date = datetime([2021 12 25 12 0 0]);       % [-] Date time of the starting of orbit propagation
-nPeriod = 10;                 % [-] Number of periods the orbit is propagated for
-deltaPeriod = 1*24*60*60;       % [s] Delta period for TLEs parsing
-nPoints = 100;                % [-] Number of points for each period at which coordinates are computed
-nOM = 30;                     % [-] Number of RAAN that are calculated to find the optimal value
-nom = 30;                     % [-] Number of omega that are calculated to find the optimal value
-
+date0 = datetime([2021 12 25 12 0 0]);   % [-] Date time of the starting of orbit propagation
+nPeriod = 10;                            % [-] Number of periods the orbit is propagated for
+deltaPeriod = 1*24*60*60;                % [s] Delta period for TLEs parsing
+nPoints = 100;                           % [-] Number of points for each period at which coordinates are computed
+nOM = 36;                                % [-] Number of RAAN that are calculated to find the optimal value
+nom = 36;                                % [-] Number of omega that are calculated to find the optimal value
 
 %% USED CONSTANTS
-muE = astroConstants(13);     % [km^3/s^2] Earth's gravitational parameter
-
+muE = astroConstants(13);                % [km^3/s^2] Earth's gravitational parameter
 
 %% INITIAL ORBIT
 a = 7.2776e4;                 % [km] Orbit semi-major axis
@@ -83,6 +73,16 @@ Torbit = 2*pi * sqrt(a^3/muE);
 % 30 days. For computational efficiency purposes, only TLEs for those
 % objects which have an orbit period which differs from unperturbed
 % satellite orbit period of a maximum of deltaPeriod are computed.
+
+retrieveTLEs;
+error('ciao')
+%%% GET TLEs ---------------------------------------------------------------
+% the following are performed in order to retrieve last-updated TLEs of
+% satellites, space stations and debris orbiting around Earth
+if not(exist(strcat(pwd, '/functions/initialize/NORAD_TLEs.mat'), 'file'))
+    retrieveTLEs;
+end
+load(strcat(pwd, '/functions/initialize/NORAD_TLEs.mat'))
 
 
 %%% RETRIEVE TLEs DATA ----------------------------------------------------
@@ -113,20 +113,20 @@ for i = 1:N
 end
 
 %%% PROPAGATION OF TLEs OBJECTS -------------------------------------------
-Y = year(date);
-MO = month(date);
-D = day(date);
-[H, M, S] = hms(date);
+Y = year(date0);
+MO = month(date0);
+D = day(date0);
+[H, M, S] = hms(date0);
 
 % Define timespan
 timespan = linspace(0, nPeriod*Torbit, nPeriod*nPoints);
 Rtle = zeros(ctrInd, 3, length(timespan));
 for i = 1:length(timespan)
     t = timespan(i);
-    date0 = [Y MO D H M S+t];
-    Yearl = year(datetime(date0));
-    Dayl = day(datetime(date0));
-    [Hl, Ml, Sl] = hms(datetime(date0));
+    date = [Y MO D H M S+t];
+    Yearl = year(datetime(date));
+    Dayl = day(datetime(date));
+    [Hl, Ml, Sl] = hms(datetime(date));
     % Get TLEs coordinates using SGP8 propagation algorithm
     [Rtle(:, :, i), ~] = SGP8(Yearl, Dayl + hms2fracday(Hl, Ml, Sl), NORAD_TLEs(indexes,:));
 end
@@ -144,7 +144,7 @@ Yorb = cell(I*J, 1);
 orb = [orbIn, 0, 0, 0];
 [rr, vv] = par2car(orb, muE);
 x0 = [rr; vv];
-[T0, Y0] = ode113(@ode_2bp, timespan, x0, options, muE);
+[T0, Y0] = ode113(@ode_2bp, timespan, x0, options, muE, 'cart');
 
 R_i = [1 0 0; 0 cos(orbIn(3)) sin(orbIn(3)); 0 -sin(orbIn(3)) cos(orbIn(3))];
 ctr = 1;
@@ -180,58 +180,256 @@ for i = 1:I
 end
 
 
-%% PLOT ------------------------------------------------------------------
-figure('Name','Satellite distance from TLEs','NumberTitle','off');
-[OMM, OM] = meshgrid(rad2deg(OmLoop), rad2deg(omLoop));
-surf(OMM, OM, MINdis'); hold on;
-shading interp
-xlabel('$\Omega [deg]$'); ylabel('$\omega [deg]$'); zlabel('$|r_{sat}-r_{TLEs}|_{min}$')
-BEST = max(max(MINdis));
-[i1, i2] = find(MINdis == BEST);
-plot3(OmLoop(i1)*180/pi, omLoop(i2)*180/pi, BEST, 'ro')
-fprintf('\nOPTIMAL OM and om:\nOM = %.2f\nom = %.2f\n\n', OmLoop(i1)*180/pi, omLoop(i2)*180/pi)
+%%% OPTIMAL ORBIT
+BESTmod = max(max(MINdisMod))
+[i1, i2] = find(MINdisMod == BESTmod)
+OmLoop(i1)
+omLoop(i2)
+orb = [orbIn, OmLoop(i1), omLoop(i2), 0]
 
-figure('Name','Satellite distance from TLEs - exponential','NumberTitle','off');
-[OMM, OM] = meshgrid(rad2deg(OmLoop), rad2deg(omLoop));
-surf(OMM, OM, MINdisMod'); hold on;
-shading interp
-xlabel('$\Omega [deg]$'); ylabel('$\omega [deg]$'); zlabel('$f(\Omega,\omega)$')
-BESTmod = max(max(MINdisMod));
-[i1, i2] = find(MINdisMod == BESTmod);
-plot3(OmLoop(i1)*180/pi, omLoop(i2)*180/pi, BESTmod, 'ro')
-fprintf('\nOPTIMAL OM and om with exponential cost function:\nOM = %.2f\nom = %.2f\n\n', OmLoop(i1)*180/pi, omLoop(i2)*180/pi)
+%% PROPAGATE UNPERTURBED ORBIT
+% Time for: 1 orbit, 1 day, 10 days
+Tvec = [Torbit, 24*60*60, 20*Torbit];
+N = length(Tvec);
+T = cell(N, 1);
+Y = cell(N, 1);
+options = odeset('RelTol', 1e-13, 'AbsTol', 1e-14);
 
-Yorbit = Yorb{(i1-1)*J + i2};
+[rr0, vv0] = par2car(orb, muE);
+Y0 = [rr0; vv0];
+labels = {'One orbit', 'One day', '10 days'};
 
-
-%%
-figure('Name','Best orbit evolution','NumberTitle','off');
-[rteme, vteme] = SGP8(Y, D + hms2fracday(H, M, S), NORAD_TLEs(indexes,:));
-p = plot3(rteme(:, 1), rteme(:, 2), rteme(:, 3), 'go', 'MarkerSize', 1);
-axis equal; hold on; grid on
-plot3(Yorbit(:,1), Yorbit(:,2), Yorbit(:,3), 'r')
-sat = plot3(Yorbit(1,1), Yorbit(1,2), Yorbit(1,3), 'ro', 'MarkerSize', 3);
-xlim([-raMax raMax])
-ylim([-raMax raMax])
-zlim([-raMax raMax])
+figure
 [Xs, Ys, Zs] = sphere(100);
 Xs = 3671*Xs;
 Ys = 3671*Ys;
 Zs = 3671*Zs;
-surf(Xs, Ys, Zs)
-
-for i = 1:length(timespan)
-    t = timespan(i);
-    date = datetime([Y MO D H M S+t]);
-    [Hl, Ml, Sl] = hms(date);
-    fracDay = day(date) + hms2fracday(Hl, Ml, Sl);
-    [rteme, vteme] = SGP8(year(date), fracDay, NORAD_TLEs(indexes,:));
-    delete(p)
-    delete(sat)
-    p = plot3(rteme(:, 1), rteme(:, 2), rteme(:, 3), 'go', 'MarkerSize', 2);
-    sat = plot3(Yorbit(i,1), Yorbit(i,2), Yorbit(i,3), 'ro', 'MarkerSize', 3);
-    drawnow limitrate
+for i = 1:length(Tvec)
+    [T{i}, Y{i}] = ode113(@ode_2bp, [0 Tvec(i)], Y0, options, muE, 'cart');
+    subplot(1, 3, i)
+    plot3(Y{i}(:,1), Y{i}(:,2), Y{i}(:,3)); hold on; axis equal; grid on
+    surf(Xs, Ys, Zs)
+    title(labels(i))
 end
+
+% %%% GROUNDTRACK
+% GroundTrack(Tvec(3), orb, date0, 'unpert');
+% 
+% %%% REPEATING GROUNDTRACK
+% k = 12;
+% m = 1;
+% GroundTrack(Tvec(3), orb, date0, 'unpert', m, k);
+
+%% PROPAGATE PERTURBED ORBIT
+% Time for: 1 orbit, 1 day, 10 days
+Tvec = [Torbit, 24*60*60, 20*Torbit];
+N = length(Tvec);
+T = cell(N, 1);
+Y = cell(N, 1);
+options = odeset('RelTol', 1e-13, 'AbsTol', 1e-14);
+
+[rr0, vv0] = par2car(orb, muE);
+Y0 = [rr0; vv0];
+labels = {'One orbit', 'One day', '10 days'};
+
+figure
+[Xs, Ys, Zs] = sphere(100);
+Xs = 3671*Xs;
+Ys = 3671*Ys;
+Zs = 3671*Zs;
+
+[Ye0, MO0, D0] = ymd(date0);
+[H0, M0, S0] = hms(date0);
+
+for i = 1:length(Tvec)
+    [T{i}, Y{i}] = ode113(@ode_2bp, [0 Tvec(i)], Y0, options, muE, 'cart', ...
+        datetime([Ye0, MO0, D0, H0, M0, S0]));
+    subplot(1, 3, i)
+    plot3(Y{i}(:,1), Y{i}(:,2), Y{i}(:,3)); hold on; axis equal; grid on
+    surf(Xs, Ys, Zs)
+    title(labels(i))
+end
+
+% %%% GROUNDTRACK
+% GroundTrack(Tvec(3), orb, date0, 'pert');
+% 
+% %%% REPEATING GROUNDTRACK
+% k = 12;
+% m = 1;
+% GroundTrack(Tvec(3), orb, date0, 'pert', m, k);
+
+
+
+%% CARTESIAN AND GAUSS UNPERTURBED
+options = odeset('RelTol', 1e-13, 'AbsTol', 1e-14);
+[rr0, vv0] = par2car(orb, muE);
+Y0 = [rr0; vv0];
+[Tcart, Ycart] = ode113(@ode_2bp, [0 100*Torbit], Y0, options, muE, 'cart');
+orb
+[Tgauss, Ygauss] = ode113(@ode_2bp, [0 100*Torbit], orb, options, muE, 'gauss');
+
+for i = 1:length(Tgauss)
+    [Ygauss(i, 1:3), Ygauss(i, 4:6)] = par2car(Ygauss(i, :), muE);
+end
+figure
+plot3(Ycart(:,1),Ycart(:,2),Ycart(:,3))
+hold on
+plot3(Ygauss(:,1),Ygauss(:,2),Ygauss(:,3))
+
+%% CARTESIAN AND GAUSS PERTURBED
+options = odeset('RelTol', 1e-13, 'AbsTol', 1e-14);
+[rr0, vv0] = par2car(orb, muE);
+Y0 = [rr0; vv0];
+
+[Ye0, MO0, D0] = ymd(date0);
+[H0, M0, S0] = hms(date0);
+
+[Tcart, Ycart] = ode113(@ode_2bp, [0 100*Torbit], Y0, options, muE, 'cart',...
+    datetime([Ye0, MO0, D0, H0, M0, S0]));
+[Tgauss, Ygauss] = ode113(@ode_2bp, [0 100*Torbit], orb, options, muE, 'gauss', ...
+    datetime([Ye0, MO0, D0, H0, M0, S0]));
+
+% for i = 1:length(Tgauss)
+%     [Ygauss(i, 1:3), Ygauss(i, 4:6)] = par2car(Ygauss(i, :), muE);
+% end
+
+%%
+for i = 1:length(Tcart)
+    orb = car2par(Ycart(i,1:3), Ycart(i,4:6), muE);
+    a(i) = orb(1);
+end
+
+figure
+plot3(Ygauss(:,1),Ygauss(:,2),Ygauss(:,3))
+legend('cart','gauss')
+
+
+%% FILTER
+[Tgauss, Ygauss] = ode113(@ode_2bp, [0 1000*Torbit], orb, options, muE, 'gauss', ...
+    datetime([Ye0, MO0, D0, H0, M0, S0]));
+[perturbations] = recallOdeFcn(@ode_2bp, Tgauss, Ygauss, muE, 'gauss', datetime([Ye0, MO0, D0, H0, M0, S0]));
+
+rr = zeros(3, length(Tgauss)); vv = zeros(3, length(Tgauss));
+for i = 1:length(Tgauss)
+    [rr(:,i), vv(:,i)] = par2car(Ygauss(i,:), muE);
+end
+
+%%
+close all
+
+figure('Name','a','NumberTitle','off');
+plot(Tgauss, Ygauss(:,1)); grid on;
+hold on;
+plot(Tgauss, movmean(Ygauss(:,1), 15000), 'LineWidth', 2)
+title('Semi major axis');
+xlabel('Time [s]'); ylabel('a [km]');
+
+figure('Name','e','NumberTitle','off');
+plot(Tgauss, Ygauss(:,2)); grid on;
+hold on;
+plot(Tgauss, movmean(Ygauss(:,2), 15000), 'LineWidth', 2)
+title('Eccentricity');
+xlabel('Time [s]'); ylabel('e [-]');
+
+figure('Name','i','NumberTitle','off');
+plot(Tgauss, wrapTo360(Ygauss(:,3)*180/pi)); grid on;
+hold on;
+plot(Tgauss, wrapTo360(movmean(Ygauss(:,3)*180/pi, 15000)), 'LineWidth', 2)
+title('Inclination');
+xlabel('Time [s]'); ylabel('i [deg]');
+
+figure('Name','aJ2','NumberTitle','off');
+plot(Tgauss, vecnorm(perturbations.aJ2)); grid on;
+hold on;
+title('aJ2');
+xlabel('Time [s]'); ylabel('aJ2 [km/$s^2$]');
+
+figure('Name','aMOON','NumberTitle','off');
+plot(Tgauss, vecnorm(perturbations.aMOON)); grid on;
+hold on;
+title('aMOON');
+xlabel('Time [s]'); ylabel('aMOON [km/$s^2$]');
+
+figure('Name','perturbations acc.','NumberTitle','off');
+plot(Tgauss, vecnorm(perturbations.aMOON + perturbations.aJ2)); grid on;
+hold on;
+plot(Tgauss, movmean(vecnorm(perturbations.aMOON + perturbations.aJ2), Tgauss(end), 'SamplePoints', Tgauss,...
+    'endpoints', 'shrink'), 'LineWidth', 2)
+title('a Pert');
+xlabel('Time [s]'); ylabel('a pert [km/$s^2$]');
+
+figure('Name','Position','NumberTitle','off');
+plot(Tgauss, vecnorm(rr)); grid on;
+hold on;
+plot(Tgauss, movmean(vecnorm(rr), Tgauss(end), 'SamplePoints', Tgauss,...
+    'endpoints', 'shrink'), 'LineWidth', 2)
+title('rr');
+xlabel('Time [s]'); ylabel('r [km]');
+
+%%
+figure
+colormap = parula(length(Tgauss));
+for i = 2:10:length(Tgauss)
+    plot3([rr(1,i) rr(1, i-1)], [rr(2,i) rr(2, i-1)], [rr(3,i) rr(3, i-1)], ...
+        'color', colormap(i, :));
+    hold on
+end
+
+
+
+
+%% PLOT ------------------------------------------------------------------
+% figure('Name','Satellite distance from TLEs','NumberTitle','off');
+% [OMM, OM] = meshgrid(rad2deg(OmLoop), rad2deg(omLoop));
+% surf(OMM, OM, MINdis'); hold on;
+% shading interp
+% xlabel('$\Omega [deg]$'); ylabel('$\omega [deg]$'); zlabel('$|r_{sat}-r_{TLEs}|_{min}$')
+% BEST = max(max(MINdis));
+% [i1, i2] = find(MINdis == BEST);
+% plot3(OmLoop(i1)*180/pi, omLoop(i2)*180/pi, BEST, 'ro')
+% fprintf('\nOPTIMAL OM and om:\nOM = %.2f\nom = %.2f\n\n', OmLoop(i1)*180/pi, omLoop(i2)*180/pi)
+% 
+% figure('Name','Satellite distance from TLEs - exponential','NumberTitle','off');
+% [OMM, OM] = meshgrid(rad2deg(OmLoop), rad2deg(omLoop));
+% surf(OMM, OM, MINdisMod'); hold on;
+% shading interp
+% xlabel('$\Omega [deg]$'); ylabel('$\omega [deg]$'); zlabel('$f(\Omega,\omega)$')
+% BESTmod = max(max(MINdisMod));
+% [i1, i2] = find(MINdisMod == BESTmod);
+% plot3(OmLoop(i1)*180/pi, omLoop(i2)*180/pi, BESTmod, 'ro')
+% fprintf('\nOPTIMAL OM and om with exponential cost function:\nOM = %.2f\nom = %.2f\n\n', OmLoop(i1)*180/pi, omLoop(i2)*180/pi)
+% 
+% Yorbit = Yorb{(i1-1)*J + i2};
+% 
+% 
+% %%
+% figure('Name','Best orbit evolution','NumberTitle','off');
+% [rteme, vteme] = SGP8(Y, D + hms2fracday(H, M, S), NORAD_TLEs(indexes,:));
+% p = plot3(rteme(:, 1), rteme(:, 2), rteme(:, 3), 'go', 'MarkerSize', 1);
+% axis equal; hold on; grid on
+% plot3(Yorbit(:,1), Yorbit(:,2), Yorbit(:,3), 'r')
+% sat = plot3(Yorbit(1,1), Yorbit(1,2), Yorbit(1,3), 'ro', 'MarkerSize', 3);
+% xlim([-raMax raMax])
+% ylim([-raMax raMax])
+% zlim([-raMax raMax])
+% [Xs, Ys, Zs] = sphere(100);
+% Xs = 3671*Xs;
+% Ys = 3671*Ys;
+% Zs = 3671*Zs;
+% surf(Xs, Ys, Zs)
+% 
+% for i = 1:length(timespan)
+%     t = timespan(i);
+%     date = datetime([Y MO D H M S+t]);
+%     [Hl, Ml, Sl] = hms(date);
+%     fracDay = day(date) + hms2fracday(Hl, Ml, Sl);
+%     [rteme, vteme] = SGP8(year(date), fracDay, NORAD_TLEs(indexes,:));
+%     delete(p)
+%     delete(sat)
+%     p = plot3(rteme(:, 1), rteme(:, 2), rteme(:, 3), 'go', 'MarkerSize', 2);
+%     sat = plot3(Yorbit(i,1), Yorbit(i,2), Yorbit(i,3), 'ro', 'MarkerSize', 3);
+%     drawnow limitrate
+% end
 
 
 

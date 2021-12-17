@@ -20,13 +20,6 @@ OUTPUTS:
 
 CALLED FUNCTIONS: -
 
-REVISIONS:
-- #0    16/11/2018, Release, Davide Rosato
-Copyright © 2021, Skyward Experimental Rocketry, AFD department
-All rights reserved
-
-SPDX-License-Identifier: GPL-3.0-or-later
-
 %}
 [~,firstStep] = fun(T(1),Y(1,:),varargin{:});
 
