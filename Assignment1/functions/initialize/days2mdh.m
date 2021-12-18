@@ -4,7 +4,7 @@ function [mon, day, hr, minute, sec] = days2mdh(year, days)
 %
 % INPUT:
 %   year     double  [1x1]   year                                 [y]
-%   days     double  [1x1]   fraction of                          [d]
+%   days     double  [1x1]   day + fraction of the day            [d]
 %
 % OUTPUT:
 %    mon     double  [1x1]   number of months integer greater or equal to 

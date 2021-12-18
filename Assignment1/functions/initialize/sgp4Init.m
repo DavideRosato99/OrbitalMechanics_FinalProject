@@ -1,9 +1,30 @@
 function [satData] = sgp4Init(satData, epoch)
-
-% [satData] = sgp4Init(whichconst, opsmode, satData,...
-%     satData.jdsatepoch+satData.jdsatepochf-2433281.5, satData.bstar, ...
-%     satData.ndot, satData.nddot, satData.ecco, satData.argpo, ...
-%     satData.inclo, satData.mo, satData.no_kozai, satData.nodeo);
+% sgp4Init - the function initializes satellite data from TLEs
+%
+%  INPUT:
+%   satData     struct    [-]      satellites data from TLE 
+%   epoch       double    [Nx1]    satellite TLE epoch(mjd2000) 
+%
+%  OUTPUT:
+%   satData     struct    [-]      initialized satellites data from TLE 
+%
+% CALLED FUNCTIONS: 
+%   wgs84data
+%   initl
+%   dpper
+%   dsinit
+%   dscom
+%
+% CONTRIBUTORS:
+%   Rosato Davide               10618468
+%   Saba Mohammadi Yengeje      10789462
+%   Spinelli Jason              10618465
+%   Tagliati Alessia            10635119
+%
+% VERSIONS
+%   2021-10-21: Release
+%
+% -------------------------------------------------------------------------
 %% INITIALIZATION
 N = size(satData, 1);
 

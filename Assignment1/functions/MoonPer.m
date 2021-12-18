@@ -4,11 +4,11 @@ function [apMG_vect] = MoonPer(r_moon_vect,r_vect)
 %           gravity influence in cartesian coordinates.
 %
 % INPUT:
-%	r_moon_vect   double  [1x3]    Moon position vector              [km]
-%   r_vect        double  [1x3]    Space-craft position vector       [km]
-%% attenzione controllare grandezza vettori input/output
+%	r_moon_vect   double  [3x1]    Moon position vector              [km]
+%   r_vect        double  [3x1]    Space-craft position vector       [km]
+%
 % OUTPUT:
-%   [apMG_vect]   double  [1x3]    Perturbed acceleration vector [km/s^2]
+%   [apMG_vect]   double  [3x1]    Perturbed acceleration vector [km/s^2]
 %
 % CALLED FUNCTIONS: 
 %   astroConstants

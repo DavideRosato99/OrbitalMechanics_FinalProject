@@ -3,13 +3,10 @@ function [l, l1, f, d, omega] = fundarg(ttt)
 %            values for iau 1980 theory
 %
 %  PROTOTYPE:
-% [ l, l1, f, d, omega, ...
-% lonmer, lonven, lonear, lonmar, lonjup, lonsat, lonurn, lonnep, precrate]... 
-%  = fundarg( ttt, opt );
+% [l, l1, f, d, omega] = fundarg(ttt)
 %
 %  INPUTS:
 %    ttt         - julian centuries of tt
-%    opt         - method option                  '06', '02', '96', '80'
 %
 %  OUTPUTS:
 %    l           - delaunay element               rad

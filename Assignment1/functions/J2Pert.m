@@ -3,7 +3,7 @@ function [apJ2_vect] = J2Pert(r_vect,J2,R,mu)
 %            perturbation
 %    
 % INPUT:
-%   r_vec        double [1x3]   Position vector                  [km]
+%   r_vec        double [3x1]   Position vector                  [km]
 %   J2           double [1x1]   J2 parameter                     [-]
 %   R            double [1x1]   Planet radius                    [km]
 %   mu           double [1x1]   Planet gravitational constant    [km^3/s^2]
