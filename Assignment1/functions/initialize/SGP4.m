@@ -1,4 +1,39 @@
 function [rr, vv] = SGP4(satData, date)
+% SGP4 - Modified orbit propagator model that combines SGP4 (Near Earth
+% model) and SDP4 (Deep Space model) routines. Note that positions and 
+% velocities vectors are computed in TEME (True Equator Mean Equinox) 
+% reference frame.
+%
+% PROTOTYPE
+%   [rr,vv]=SGP4(satData,date)
+%
+% INPUT:
+%   satData   struct    [-]   satellites data from TLE                  [-]
+%   date      double  [1x6]   date at which the calculation 
+%                             are to be performed       [yy-mm-dd-hh-MM-ss]
+%
+% OUTPUT:
+%   rr        double  [Nx3]   positions vectors (TEME)                 [km]
+%   vv        double  [Nx3]   velocities vectors (TEME)              [km/s]
+%
+% CALLED FUNCTIONS: days2mdh, dspace, dpper
+%
+% REFERENCES:
+%   Hoots, Roehrich, Norad Spacetrack Report #3 1980
+%   Hoots, Norad Spacetrack Report #6 1986
+%   Hoots, Schumacher and Glover 2004
+%   David Vallado, Crawford, Hujsak, Kelso  2006
+%
+% CONTRIBUTORS:
+%   Rosato Davide               10618468
+%   Saba Mohammadi Yengeje      10789462
+%   Spinelli jason              10618465
+%   Tagliati Alessia            10635119
+%
+% CHANGELOG:
+%     2021-12-17, 2021-2022 Assignments changes for practical uses
+%
+% -------------------------------------------------------------------------
 
 %% INITIALIZE
 N = size(satData.Name, 2);

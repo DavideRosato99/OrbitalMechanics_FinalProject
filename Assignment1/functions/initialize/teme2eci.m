@@ -28,8 +28,8 @@ function [rECI, vECI, tm] = teme2eci(rTEME, vTEME, timemjd2000)
 %   Spinelli jason              10618465
 %   Tagliati Alessia            10635119
 %
-% VERSIONS
-%   2021-10-21: Release
+% CHANGELOG:
+%     2021-12-17, 2021-2022 Assignments changes for practical uses
 %
 % -------------------------------------------------------------------------
 
