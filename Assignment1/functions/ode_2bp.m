@@ -2,11 +2,15 @@ function [dx, parout] = ode_2bp(t,x,mu,typeSim,varargin)
 % ode_2bp - Ode function to compute the motion of the satellite.
 %
 % PROTOTYPE
-%   dx=ode_2bp(t,x,mu,typeSim) will perform a computation of the orbit
-%   without perturbations
+%   dx=ode_2bp(t,x,mu,'cart') will perform a computation of the orbit
+%   without perturbations using cartesian derivatives equations.
+%
+%   dx=ode_2bp(t,x,mu,'gauss') will perform a computation of the orbit
+%   without perturbations using Gauss derivatives equations.
 %
 %   dx=ode_2bp(t,x,mu,typeSim,date0) will perform a computation of the
-%   orbit with J2 and Moon perturbations.
+%   orbit with J2 and Moon perturbations using the specified derivatives
+%   equations in typeSim input.
 %
 % INPUT:
 %   t        double  [1x1]   time                                 [s]
@@ -15,7 +19,7 @@ function [dx, parout] = ode_2bp(t,x,mu,typeSim,varargin)
 %   typeSim  char    [1x1]   type of simulation                   [-]
 %
 % OUTPUT:
-%   dx       double [6x1]   state vector derivative              [-]
+%   dx       double [6x1]   state vector derivative               [-]
 %
 % CALLED FUNCTIONS: -
 %
