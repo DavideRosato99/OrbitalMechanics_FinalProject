@@ -74,16 +74,32 @@ Torbit = 2*pi * sqrt(a^3/muE);
 % objects which have an orbit period which differs from unperturbed
 % satellite orbit period of a maximum of deltaPeriod are computed.
 
-retrieveTLEs;
-error('ciao')
-%%% GET TLEs ---------------------------------------------------------------
-% the following are performed in order to retrieve last-updated TLEs of
-% satellites, space stations and debris orbiting around Earth
-if not(exist(strcat(pwd, '/functions/initialize/NORAD_TLEs.mat'), 'file'))
-    retrieveTLEs;
+if exist(strcat(pwd, '\functions\initialize\TLEs.mat'), 'file')
+    load(strcat(pwd, '\functions\initialize\TLEs.mat'));
+    answer = questdlg({strcat("Actual date:              ", datestr(datetime('now'))),...
+        strcat("Last TLEs update:    ", satData.lastUpdate), ...
+        'Do you want to upload new TLEs or use the actual ones?'}, ...
+        'Dialog', 'Actual', 'New', 'Abort', 'Abort');
+    
+    % handle response
+    switch answer
+        case 'Actual'
+            fprintf('Using the TLEs file located in folder initialize... \n\n')
+            load(strcat(pwd, '\functions\initialize\TLEs.mat'));
+        case 'New'
+            fprintf('Generating new TLEs...\n');
+            retrieveTLEs
+            fprintf('New TLEs file generated!\n\n');
+            clearvars -except satData date0 nPeriod deltaPeriod nPoints nOM nom muE a e i orbIn Torbit
+        case 'Abort'
+            error('Simulation aborted')
+    end
+else
+    fprintf('No TLEs file was found in folder initialize, generating a new one...\n\n');
+    retrieveTLEs
 end
-load(strcat(pwd, '/functions/initialize/NORAD_TLEs.mat'))
 
+error('ciao')
 
 %%% RETRIEVE TLEs DATA ----------------------------------------------------
 % Get all earth orbiting objects positions and velocities (TEME reference frame)

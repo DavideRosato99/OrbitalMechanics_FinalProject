@@ -1,5 +1,3 @@
-% RetrieveTLEs
-%
 % Script to retrieve and parse TLEs data from celestrak.com. It saves a
 % .mat files containing several TLEs for different space objects. The
 % file data.mat contains a table which sorts satellites TLEs through:
@@ -198,15 +196,28 @@ end
 
 %% INITIALIZE VARIABLES FOR SGP4/SDP4 MODEL
 [satData] = sgp4Init(satData, satData.mjd2000satepoch);
+satData.lastUpdate = datestr(datetime('now'));
 
-%%
-[rr, vv] = SGP4(satData, [2021 12 20 12 0 0]);
+%% SAVE TLEs DATA
+save(strcat(pwd, '\functions\initialize\TLEs.mat'), 'satData')
 
-for i = 1:size(rr, 1)
-    [rr(i, 1:3), vv(i, 1:3)] = teme2eci(rr(i, 1:3), vv(i, 1:3), date2mjd2000([2021 12 20 12 0 0]));
-end
+% %%
+% figure
+% [rr, vv] = SGP4(satData, [2021 12 20 12 0 0]);
+% [rr(i, 1:3), vv(i, 1:3)] = teme2eci(rr(i, 1:3), vv(i, 1:3), date2mjd2000([2021 12 20 12 0 0]));
+% s = plot3(rr(:,1), rr(:,2), rr(:,3), 'go');
+% axis equal
+% 
+% for d = 1:10
+%     [rr, vv] = SGP4(satData, [2021 12 20 12+d 0 0]);
+%     for i = 1:size(rr, 1)
+%         [rr(i, 1:3), vv(i, 1:3)] = teme2eci(rr(i, 1:3), vv(i, 1:3), date2mjd2000([2021 12 20 12+d 0 0]));
+%     end
+%     delete(s);
+%     s = plot3(rr(:,1), rr(:,2), rr(:,3), 'go');
+%     axis equal
+%     drawnow limitrate
+% end
 
-plot3(rr(:,1), rr(:,2), rr(:,3), 'go')
-axis equal
 
 
