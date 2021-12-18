@@ -1,5 +1,53 @@
 function [deltapsi, meaneps, nut] = nutation(ttt, ddpsi, ddeps)
-
+% nutation - this function calulates the transformation matrix that 
+%            accounts for the effects of nutation.
+% PROTOTYPE:
+%    [deltapsi, trueeps, meaneps, omega,nut]=nutation(ttt, ddpsi, ddeps );
+%
+%  INPUTS:
+%    ttt         - julian centuries of tt
+%    ddpsi       - delta psi correction to gcrf    [rad]
+%    ddeps       - delta eps correction to gcrf    [rad]
+%
+%  OUTPUTS:
+%    deltapsi    - nutation angle                  [rad]
+%    trueeps     - true obliquity of the ecliptic  [rad]
+%    meaneps     - mean obliquity of the ecliptic  [rad]
+%    omega       -                                 [rad]
+%    nut         - transformation matrix for tod - mod
+%
+%  LOCALS:
+%    iar80       - integers for fk5 1980
+%    rar80       - reals for fk5 1980
+%    ttt2        - ttt squared
+%    ttt3        - ttt cubed
+%    l           -                                [rad]
+%    ll          -                                [rad]
+%    f           -                                [rad]
+%    d           -                                [rad]
+%    deltaeps    - change in obliquity            [rad]
+%
+%  CALLED FUNCTIONS:
+%    fundarg     - find fundamental arguments
+%
+%  AUTHOR:   
+%    David Vallado 719-573-2600   27 jun 2002
+%
+%  REVISIONS:
+%    vallado: consolidate with iau 2000 14 feb 2005
+%
+%  REFERENCES:
+%    vallado ì2013, 224-226
+%
+% CHANGELOG:
+%     2021-12-17, 2021-2022 Assignments changes for practical uses
+%
+% CONTRIBUTORS:
+%   Rosato Davide               10618468
+%   Saba Mohammadi Yengeje      10789462
+%   Spinelli Jason              10618465
+%   Tagliati Alessia            10635119
+%  ------------------------------------------------------------------------
         deg2rad = pi/180.0;
 
         [iar80, rar80] = iau80in;  % coeff in deg
@@ -48,14 +96,4 @@ function [deltapsi, meaneps, nut] = nutation(ttt, ddpsi, ddeps)
         nut(3,2) =  costrueeps * sineps * cospsi - sintrueeps * coseps;
         nut(3,3) =  sintrueeps * sineps * cospsi + costrueeps * coseps;
         
-end
-
-
-function [l, l1, f, d, omega] = fundarg(ttt)
-l     = ((((0.064) * ttt + 31.310) * ttt + 1717915922.6330) * ttt) / 3600.0 + 134.96298139;
-l1    = ((((-0.012) * ttt - 0.577) * ttt + 129596581.2240) * ttt) / 3600.0 + 357.52772333;
-f     = ((((0.011) * ttt - 13.257) * ttt + 1739527263.1370) * ttt) / 3600.0 + 93.27191028;
-d     = ((((0.019) * ttt - 6.891) * ttt + 1602961601.3280) * ttt) / 3600.0 + 297.85036306;
-omega = ((((0.008) * ttt + 7.455) * ttt - 6962890.5390) * ttt) / 3600.0 + 125.04452222;
-
 end

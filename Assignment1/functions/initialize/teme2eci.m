@@ -1,8 +1,8 @@
 function [rECI, vECI, tm] = teme2eci(rTEME, vTEME, timemjd2000)
-% teme2eci - function to compute the rotation matrix to perform a
-% transformation from TEME (True Equator Mean Equinox) reference frame to
-% ECI Geocentric Equatorial Reference Frame (IAU-76/FK5 J2000, mean
-% equator, mean equinox frame).
+% teme2eci - the function computes the rotation matrix to perform a
+%            transformation from TEME (True Equator Mean Equinox) reference
+%            frame to ECI Geocentric Equatorial Reference Frame 
+%            (IAU-76/FK5 J2000, mean equator, mean equinox frame).
 %
 % PROTOTYPE
 %   [rECI,vECI]=teme2eci(rTEME, vTEME, timemjd2000)
@@ -17,7 +17,9 @@ function [rECI, vECI, tm] = teme2eci(rTEME, vTEME, timemjd2000)
 %   vECI         double  [Nx3]   velocities vectors (ECI)          [km/s]
 %   tm           double  [3x3]   rotation matrix (TEME -> ECI)        [-]
 %
-% CALLED FUNCTIONS: precess, nutation
+% CALLED FUNCTIONS: 
+%   precess
+%   nutation
 %
 % REFERENCES:
 %   David Vallado       2013, 231-233

@@ -27,8 +27,9 @@ function [tumin, mu, radiusearthkm, xke, j2, j3, j4, j3oj2] = wgs84data
 % CONTRIBUTORS:
 %   Rosato Davide               10618468
 %   Saba Mohammadi Yengeje      10789462
-%   Spinelli jason              10618465
+%   Spinelli Jason              10618465
 %   Tagliati Alessia            10635119
+%
 %  ------------------------------------------------------------------------
 
 

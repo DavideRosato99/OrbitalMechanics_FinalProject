@@ -16,7 +16,10 @@ function [rr, vv] = SGP4(satData, date)
 %   rr        double  [Nx3]   positions vectors (TEME)                 [km]
 %   vv        double  [Nx3]   velocities vectors (TEME)              [km/s]
 %
-% CALLED FUNCTIONS: days2mdh, dspace, dpper
+% CALLED FUNCTIONS: 
+%   days2mdhd
+%   space
+%   dpper
 %
 % REFERENCES:
 %   Hoots, Roehrich, Norad Spacetrack Report #3 1980
@@ -27,7 +30,7 @@ function [rr, vv] = SGP4(satData, date)
 % CONTRIBUTORS:
 %   Rosato Davide               10618468
 %   Saba Mohammadi Yengeje      10789462
-%   Spinelli jason              10618465
+%   Spinelli Jason              10618465
 %   Tagliati Alessia            10635119
 %
 % CHANGELOG:

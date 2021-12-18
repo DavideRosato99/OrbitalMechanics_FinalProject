@@ -77,7 +77,7 @@ function [ sinim,cosim,sinomm,cosomm,snodm,cnodm,day,e3,ee2,em,emsq,gam,...
 % CONTRIBUTORS:
 %   Rosato Davide               10618468
 %   Saba Mohammadi Yengeje      10789462
-%   Spinelli jason              10618465
+%   Spinelli Jason              10618465
 %   Tagliati Alessia            10635119
 %  ------------------------------------------------------------------------
    % /* -------------------------- constants ------------------------- */

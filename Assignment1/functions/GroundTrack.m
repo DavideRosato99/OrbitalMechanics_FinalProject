@@ -1,5 +1,5 @@
 function [] = GroundTrack(Tfin, orb, date0, type, varargin)
-% GroundTrack - Function to compute the ground track of the satellite.
+% GroundTrack - the function computes the ground track of a spacecraft.
 %
 % PROTOTYPE
 %   [ra,dec,lon,lat]=GroundTrack(T,Y,green0,mu)
@@ -9,11 +9,21 @@ function [] = GroundTrack(Tfin, orb, date0, type, varargin)
 %   Y        double  [Nx6]   Position Vector (ECI)               [km]
 %   green0   double  [1x1]   Starting Greenwich                 [rad]
 %
-% OUTPUT:
+% PROTOTYPE OUTPUT: 
+%   ra       double  [1x1]   rigth ascension                       []
+%   dec      double  [1x1]   declination                           []
+%   lon      double  [1x1]   longitude                             []
+%   lat      double  [1x1]   latitude                              []
+%   
+% CALLED FUNCTIONS: 
+%   astroConstants 
+%   par2car
+%   ode_2bp
 %
-% CALLED FUNCTIONS: -
-%
-% NOTE: Time vector must be the ode solution time vector, starting from 0
+% NOTE: 
+%   .Time vector must be the ode solution time vector, starting from 0;
+%   .If the function is used without output it gives only the plot of the
+%    groundtrack.
 %
 % CONTRIBUTORS:
 %   Rosato Davide               10618468

@@ -1,22 +1,30 @@
 function [apMG_vect] = MoonPer(r_moon_vect,r_vect)
-% Moonper.m
-% 
-% PROTOTYPE:
-%   [apMG_vect] = Moonper (r_moon_vect,r_vect))
 %
-% DESCRIPTION:
-% 	This function gives the perturbed acceleration due lunar gravity
-% 	influence.
+% Moonper - the function gives the perturbed acceleration due to lunar     
+%           gravity influence in cartesian coordinates.
 %
 % INPUT:
-%	r_moon_vect              Moon position vector
-%   r_vect                   Space-craft position vector
-%
+%	r_moon_vect   double  [1x3]    Moon position vector              [km]
+%   r_vect        double  [1x3]    Space-craft position vector       [km]
+%% attenzione controllare grandezza vettori input/output
 % OUTPUT:
-%   [apMG_vect]              Perturbed acceleration vector     
+%   [apMG_vect]   double  [1x3]    Perturbed acceleration vector [km/s^2]
+%
+% CALLED FUNCTIONS: 
+%   astroConstants
+%
+% CONTRIBUTORS:
+%   Rosato Davide               10618468
+%   Saba Mohammadi Yengeje      10789462
+%   Spinelli Jason              10618465
+%   Tagliati Alessia            10635119
+%
+% VERSIONS
+%   2021-10-21: Release
+%
+% -------------------------------------------------------------------------
 
-
-mu_moon = astroConstants(20);  % Km^3/s^2
+mu_moon = astroConstants(20);  % [Km^3/s^2]
 r_ms_vect = r_moon_vect - r_vect;
 
 r_ms = norm(r_ms_vect);

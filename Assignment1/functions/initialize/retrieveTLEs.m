@@ -48,7 +48,7 @@
 % CONTRIBUTORS:
 %   Rosato Davide          10618468     davide.rosato@mail.polimi.it
 %   Saba Mohammadi Yengeje 10789462     saba.mohammadi@mail.polimi.it
-%   Spinelli jason         10618465     jason.spinelli@mail.polimi.it
+%   Spinelli Jason         10618465     jason.spinelli@mail.polimi.it
 %   Tagliati Alessia       10635119     alessia.tagliati@mail.polimi.it
 %
 % VERSIONS

@@ -1,7 +1,7 @@
 function [pos, vel] = SGP8(year, fracDay, satdata)
-% SGP8 - function to compute position and velocity vectors w.r.t. TEME
-% reference frame (True Equator, Mean Equinox) starting from satellites
-% TLEs
+% SGP8 - the function computes the position and velocity vectors with 
+%        respect to TEME reference frame (True Equator, Mean Equinox) 
+%        starting from satellites TLEs.
 %
 % PROTOTYPE
 %   [pos, vel] = SGP8(year, fracDay, satdata)
@@ -15,14 +15,14 @@ function [pos, vel] = SGP8(year, fracDay, satdata)
 %   pos      double [Nx3]  Position vector (TEME reference frame)    [km]
 %   vel      double [Nx3]  Velocity vector (TEME reference frame)    [km/s]
 %
-% CALLED FUNCTIONS. astroConstants
+% CALLED FUNCTIONS: astroConstants
 %
 % NOTE: Year must be greater or equal to 2000
 %
 % CONTRIBUTORS:
 %   Rosato Davide               10618468
 %   Saba Mohammadi Yengeje      10789462
-%   Spinelli jason              10618465
+%   Spinelli Jason              10618465
 %   Tagliati Alessia            10635119
 %
 % REFERENCES

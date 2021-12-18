@@ -7,7 +7,89 @@ function [  atime,  em,     argpm,  inclm,  xli,    mm,     xni,...
             t,      tc,     gsto,   xfact,  xlamo,  no,     atime,...
             em,     argpm,  inclm,  xli,    mm,     xni,    nodem,...
             nm)
-
+%  dspace - this procedure provides deep space contributions to mean 
+%           elements for perturbing third body.  these effects have been 
+%           averaged over one revolution of the sun and moon.  for earth 
+%           resonance effects, the effects have been averaged over no 
+%           revolutions of the satellite. (mean motion)
+%
+%   INPUTS:
+%     d2201, d2211, d3210, d3222, d4410, d4422, d5220, d5232, d5421, d5433       -
+%     dedt        -
+%     del1, del2, del3  -
+%     didt        -
+%     dmdt        -
+%     dnodt       -
+%     domdt       -
+%     irez        - flag for resonance           0-none, 1-one day, 2-half day
+%     argpo       - argument of perigee
+%     argpdot     - argument of perigee dot (rate)
+%     t           - time
+%     tc          -
+%     gsto        - gst
+%     xfact       -
+%     xlamo       -
+%     no          - mean motion
+%     atime       -
+%     em          - eccentricity
+%     ft          -
+%     argpm       - argument of perigee
+%     inclm       - inclination
+%     xli         -
+%     mm          - mean anomaly
+%     xni         - mean motion
+%     nodem      - right ascension of ascending node
+%
+%   OUTPUTS:
+%     atime       -
+%     em          - eccentricity
+%     argpm       - argument of perigee
+%     inclm       - inclination
+%     xli         -
+%     mm          - mean anomaly
+%     xni         -
+%     nodem      - right ascension of ascending node
+%     dndt        -
+%     nm          - mean motion
+%
+%   LOCALS:
+%     delt        -
+%     ft          -
+%     theta       -
+%     x2li        -
+%     x2omi       -
+%     xl          -
+%     xldot       -
+%     xnddt       -
+%     xndt        -
+%     xomi        -
+%
+%   CALLED FUNCTION:
+%     none        -
+%
+% AUTHOR:
+%   Jeff Beck 
+%   beckja@alumni.lehigh.edu
+%   1.0 (aug 6, 2006) - update for paper dav
+%
+% ORIGINAL COMMENTS FROM VALLADO C++ VERSION:
+%   david vallado 719-573-2600 28 jun 2005
+%
+%   REFERENCES:
+%     hoots, roehrich, norad spacetrack report #3 1980
+%     hoots, norad spacetrack report #6 1986
+%     hoots, schumacher and glover 2004
+%     vallado, crawford, hujsak, kelso  2006
+%
+% CHANGELOG:
+%     2021-12-17, 2021-2022 Assignments changes for practical uses
+%
+% CONTRIBUTORS:
+%   Rosato Davide               10618468
+%   Saba Mohammadi Yengeje      10789462
+%   Spinelli Jason              10618465
+%   Tagliati Alessia            10635119
+%  ------------------------------------------------------------------------
    twopi = 2.0 * pi;
 
    fasx2 = 0.13130908;

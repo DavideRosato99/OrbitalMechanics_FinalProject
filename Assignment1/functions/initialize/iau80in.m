@@ -1,4 +1,30 @@
 function [iar80, rar80] = iau80in
+%  iau80in - the function initializes the nutation matricies needed for 
+%            reduction calculations. the data used are the nut80.dat
+%
+%  INPUTS: [-]
+%
+%  OUTPUTS: [??]
+%
+%  LOCALS:
+%    convrt      - conversion factor to degrees
+%    i,j         - index
+%
+%  CALLED FUNCTION:
+%    none        
+%
+%  AUTHOR: 
+%    David Vallado   719-573-2600   27 may 2002
+%
+% CHANGELOG:
+%     2021-12-17, 2021-2022 Assignments changes for practical uses
+%
+% CONTRIBUTORS:
+%   Rosato Davide               10618468
+%   Saba Mohammadi Yengeje      10789462
+%   Spinelli Jason              10618465
+%   Tagliati Alessia            10635119
+%  ------------------------------------------------------------------------
 convrt= 0.0001 * pi / (180*3600.0);
 
  data = [0  0  0  0  1 -171996 -174.2 92025  8.9    1

@@ -1,6 +1,6 @@
 function [orb] = car2par(rr, vv, mu)
 % car2par - Trasformation from cartesian parameters to Keplerian
-% coordinates
+%           coordinates
 %
 % PROTOTYPE
 %   [orb]=car2par(rr,vv,mu)
@@ -18,7 +18,7 @@ function [orb] = car2par(rr, vv, mu)
 % CONTRIBUTORS:
 %   Rosato Davide               10618468
 %   Saba Mohammadi Yengeje      10789462
-%   Spinelli jason              10618465
+%   Spinelli Jason              10618465
 %   Tagliati Alessia            10635119
 %
 % VERSIONS
