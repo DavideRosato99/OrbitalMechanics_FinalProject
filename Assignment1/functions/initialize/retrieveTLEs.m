@@ -199,50 +199,14 @@ end
 %% INITIALIZE VARIABLES FOR SGP4/SDP4 MODEL
 [satData] = sgp4Init(satData, satData.mjd2000satepoch);
 
+%%
+[rr, vv] = SGP4(satData, [2021 12 20 12 0 0]);
 
-
-
-%% SAVE DATA
-NORAD_TLEs = table(Name', Cnum', SC', ID', epoch', days', TD1', TD2', BStar', ...
-    elnum', inclo', nodeo', ecco', argpo', no_kozai', revnum');
-NORAD_TLEs.Properties.VariableNames = {'Name', 'satnum', 'classification', ...
-    'intldesg', 'epochyr', 'epochdays', 'ndot', 'nddot', 'bstar', ...
-    'elnum', 'inclo', 'nodeo', 'ecco', 'argpo', 'no_kozai', 'revnum'};
-
-save NORAD_TLEs NORAD_TLEs
-
-
-
-%% FUNCTIONS
-function [mon, day, hr, minute, sec] = days2mdh(year, days)
-
-% Set up array od days in month
-lMonth = [31 28 31 30 31 30 31 31 30 31 30 31];
-dayOfYr = floor(days);
-
-% Find month and day of the month
-if rem(year - 1900, 4) == 0
-    lMonth(2)= 29;
+for i = 1:size(rr, 1)
+    [rr(i, 1:3), vv(i, 1:3)] = teme2eci(rr(i, 1:3), vv(i, 1:3), date2mjd2000([2021 12 20 12 0 0]));
 end
 
-i = 1;
-intTemp = 0;
-while ( dayOfYr > intTemp + lMonth(i) ) && ( i < 12 )
-    intTemp = intTemp + lMonth(i);
-    i = i+1;
-end
-
-mon = i;
-day = dayOfYr - intTemp;
-
-% Find hours minutes and seconds 
-temp = (days - dayOfYr )*24.0;
-hr  = floor(temp);
-temp = (temp - hr) * 60.0;
-minute = fix(temp);
-sec = floor((temp - minute) * 60.0);
-
-end
-
+plot3(rr(:,1), rr(:,2), rr(:,3), 'go')
+axis equal
 
 
