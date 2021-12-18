@@ -33,9 +33,6 @@ function [rECI, vECI, tm] = teme2eci(rTEME, vTEME, timemjd2000)
 %
 % -------------------------------------------------------------------------
 
-% Get size of the positions (and velocities) vector
-N = size(rTEME, 1);
-
 %% CALCULATE ROTATION MATRIX
 ddpsi = -0.054522 * pi / (180*3600);
 ddeps = -0.006209 * pi / (180*3600);
@@ -62,9 +59,24 @@ eqe(3,3) =  1.0;
 tm = prec * nut * eqe';
 
 %% ROTATE VECTORS
-rECI = zeros(N, 3);
-vECI = zeros(N, 3);
-for i = 1:N
-    rECI(i, 1:3) = tm * rTEME(i, 1:3)';
-    vECI(i, 1:3) = tm * vTEME(i, 1:3)';
+% Position
+N = size(rTEME);
+rECI = zeros(N(1), 3);
+if N(2) > 1
+    for i = 1:N
+        rECI(i, 1:3) = tm * rTEME(i, 1:3)';
+    end
+else
+    rECI = rTEME;
+end
+
+% Velocity
+N = size(vTEME);
+vECI = zeros(N(1), 3);
+if N(2) > 1
+    for i = 1:N
+        vECI(i, 1:3) = tm * vTEME(i, 1:3)';
+    end
+else
+    vECI = vTEME;
 end

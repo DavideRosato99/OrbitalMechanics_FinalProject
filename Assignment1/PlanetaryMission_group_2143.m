@@ -38,12 +38,13 @@ addpath(genpath('functions'))
 
 %% SETTINGS
 %%% FIND OPTIMAL RAAN AND OM
-date0 = datetime([2021 12 25 12 0 0]);   % [-] Date time of the starting of orbit propagation
+date0 = [2021 12 25 12 0 0];             % [-] Date time of the starting of orbit propagation
 nPeriod = 10;                            % [-] Number of periods the orbit is propagated for
 deltaPeriod = 1*24*60*60;                % [s] Delta period for TLEs parsing
 nPoints = 100;                           % [-] Number of points for each period at which coordinates are computed
 nOM = 36;                                % [-] Number of RAAN that are calculated to find the optimal value
 nom = 36;                                % [-] Number of omega that are calculated to find the optimal value
+plotOptimal = true;                      % [-] True if plot are to be visulized
 
 %% USED CONSTANTS
 muE = astroConstants(13);                % [km^3/s^2] Earth's gravitational parameter
@@ -56,6 +57,33 @@ orbIn = [a, e, deg2rad(i)];
 
 % Orbit period
 Torbit = 2*pi * sqrt(a^3/muE);
+
+
+%% RETRIEVE TLES
+if exist(strcat(pwd, '\functions\initialize\TLEs.mat'), 'file')
+    load(strcat(pwd, '\functions\initialize\TLEs.mat'));
+    answer = questdlg({strcat("Actual date:              ", datestr(datetime('now'))),...
+        strcat("Last TLEs update:    ", satData.lastUpdate), ...
+        'Do you want to upload new TLEs or use the actual ones?'}, ...
+        'Dialog', 'Existing', 'New', 'Abort', 'Abort');
+    
+    % handle response
+    switch answer
+        case 'Existing'
+            fprintf('Using the TLEs file located in folder initialize... \n\n')
+            load(strcat(pwd, '\functions\initialize\TLEs.mat'));
+        case 'New'
+            fprintf('Generating new TLEs...\n');
+            retrieveTLEs
+            fprintf('New TLEs file generated!\n\n');
+            clearvars -except satData date0 nPeriod deltaPeriod nPoints nOM nom muE a e i orbIn Torbit
+        case 'Abort'
+            error('Simulation aborted')
+    end
+else
+    fprintf('No TLEs file was found in folder initialize, generating a new one...\n\n');
+    retrieveTLEs
+end
 
 
 %% FIN OPTIMAL RAAN AND OM ------------------------------------------------
@@ -74,38 +102,12 @@ Torbit = 2*pi * sqrt(a^3/muE);
 % objects which have an orbit period which differs from unperturbed
 % satellite orbit period of a maximum of deltaPeriod are computed.
 
-if exist(strcat(pwd, '\functions\initialize\TLEs.mat'), 'file')
-    load(strcat(pwd, '\functions\initialize\TLEs.mat'));
-    answer = questdlg({strcat("Actual date:              ", datestr(datetime('now'))),...
-        strcat("Last TLEs update:    ", satData.lastUpdate), ...
-        'Do you want to upload new TLEs or use the actual ones?'}, ...
-        'Dialog', 'Actual', 'New', 'Abort', 'Abort');
-    
-    % handle response
-    switch answer
-        case 'Actual'
-            fprintf('Using the TLEs file located in folder initialize... \n\n')
-            load(strcat(pwd, '\functions\initialize\TLEs.mat'));
-        case 'New'
-            fprintf('Generating new TLEs...\n');
-            retrieveTLEs
-            fprintf('New TLEs file generated!\n\n');
-            clearvars -except satData date0 nPeriod deltaPeriod nPoints nOM nom muE a e i orbIn Torbit
-        case 'Abort'
-            error('Simulation aborted')
-    end
-else
-    fprintf('No TLEs file was found in folder initialize, generating a new one...\n\n');
-    retrieveTLEs
-end
-
-error('ciao')
-
 %%% RETRIEVE TLEs DATA ----------------------------------------------------
 % Get all earth orbiting objects positions and velocities (TEME reference frame)
-[rteme, vteme] = SGP8(0, 0, NORAD_TLEs);
+satData = satData.data;
+[rteme, vteme] = SGP4(satData, date0);
 % Get TLEs objects orbital period to be compared to satellite's one
-N = size(NORAD_TLEs, 1);
+N = size(satData, 1);
 T_TLEs = zeros(N, 1);
 
 for i = 1:N
@@ -129,29 +131,28 @@ for i = 1:N
 end
 
 %%% PROPAGATION OF TLEs OBJECTS -------------------------------------------
-Y = year(date0);
-MO = month(date0);
-D = day(date0);
-[H, M, S] = hms(date0);
+[Y, MO, D] = ymd(datetime(date0));
+[H, M, S] = hms(datetime(date0));
 
 % Define timespan
 timespan = linspace(0, nPeriod*Torbit, nPeriod*nPoints);
-Rtle = zeros(ctrInd, 3, length(timespan));
+RtleTEME = zeros(ctrInd, 3, length(timespan));
+RtleECI = zeros(ctrInd, 3, length(timespan));
 for i = 1:length(timespan)
     t = timespan(i);
     date = [Y MO D H M S+t];
-    Yearl = year(datetime(date));
-    Dayl = day(datetime(date));
+    [Yl, MOl, Dl] = ymd(datetime(date));
     [Hl, Ml, Sl] = hms(datetime(date));
-    % Get TLEs coordinates using SGP8 propagation algorithm
-    [Rtle(:, :, i), ~] = SGP8(Yearl, Dayl + hms2fracday(Hl, Ml, Sl), NORAD_TLEs(indexes,:));
+    % Get TLEs coordinates using SGP4 propagation algorithm
+    [RtleTEME(:, :, i), ~] = SGP4(satData(indexes, :), [Yl MOl Dl Hl Ml Sl]);
+    [RtleECI(:, :, i), ~] = teme2eci(RtleTEME(:, :, i), 0, date2mjd2000([Yl MOl Dl Hl Ml Sl]));
 end
 
 
 %%% SATELLITE UNPERTURBED ORBIT PROPAGATION -------------------------------
-options=odeset('RelTol', 1e-13, 'AbsTol', 1e-14);
-OmLoop = deg2rad(linspace(1, 360, nOM));
-omLoop = deg2rad(linspace(1, 360, nom));
+options = odeset('RelTol', 1e-13, 'AbsTol', 1e-14);
+OmLoop  = deg2rad(linspace(1, 360, nOM));
+omLoop  = deg2rad(linspace(1, 360, nom));
 I = length(OmLoop);
 J = length(omLoop);
 Yorb = cell(I*J, 1);
@@ -186,7 +187,7 @@ for i = 1:I
         minDis = zeros(ctrInd, 1);
         minDisMod = zeros(ctrInd, 1);
         for m = 1:ctrInd
-            [minDis(m), ind] = min(vecnorm(Yorb{ctr}(:, 1:3)' - squeeze(Rtle(m, :, :))));
+            [minDis(m), ind] = min(vecnorm(Yorb{ctr}(:, 1:3)' - squeeze(RtleECI(m, :, :))));
             minDisMod(m) = minDis(m) * (1-exp(-T0(ind(1))/10000));
         end
         MINdis(i, j) = min(minDis);
@@ -202,6 +203,17 @@ BESTmod = max(max(MINdisMod))
 OmLoop(i1)
 omLoop(i2)
 orb = [orbIn, OmLoop(i1), omLoop(i2), 0]
+
+figure('Name','Satellite distance from TLEs - exponential','NumberTitle','off');
+[OMM, OM] = meshgrid(rad2deg(OmLoop), rad2deg(omLoop));
+surf(OMM, OM, MINdisMod'); hold on;
+shading interp
+xlabel('$\Omega [deg]$'); ylabel('$\omega [deg]$'); zlabel('$f(\Omega,\omega)$')
+BESTmod = max(max(MINdisMod));
+[i1, i2] = find(MINdisMod == BESTmod);
+plot3(OmLoop(i1)*180/pi, omLoop(i2)*180/pi, BESTmod, 'ro')
+fprintf('\nOPTIMAL OM and om with exponential cost function:\nOM = %.2f\nom = %.2f\n\n', OmLoop(i1)*180/pi, omLoop(i2)*180/pi)
+
 
 %% PROPAGATE UNPERTURBED ORBIT
 % Time for: 1 orbit, 1 day, 10 days

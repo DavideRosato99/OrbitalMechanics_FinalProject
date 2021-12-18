@@ -36,7 +36,7 @@ function [rr, vv] = SGP4(satData, date)
 % -------------------------------------------------------------------------
 
 %% INITIALIZE
-N = size(satData.Name, 2);
+N = size(satData, 1);
 rr = zeros(N, 3);
 vv = zeros(N, 3);
 
