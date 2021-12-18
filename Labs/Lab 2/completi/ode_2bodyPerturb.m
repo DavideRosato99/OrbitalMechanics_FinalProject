@@ -5,7 +5,7 @@ rr = y(1:3);
 vv = y(4:6);
 
 r = norm(rr);
-v = norm(vv);
+
 x = rr(1);
 y = rr(2);
 z = rr(3);
