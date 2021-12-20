@@ -38,7 +38,7 @@ addpath(genpath('functions'))
 
 %% SETTINGS
 %%% FIND OPTIMAL RAAN AND OM
-date0 = [2021 12 25 12 0 0];             % [-] Date time of the starting of orbit propagation
+data.starting.date0 = [2021 12 25 12 0 0];             % [-] Date time of the starting of orbit propagation
 nPeriod = 10;                            % [-] Number of periods the orbit is propagated for
 deltaPeriod = 1*24*60*60;                % [s] Delta period for TLEs parsing
 nPoints = 100;                           % [-] Number of points for each period at which coordinates are computed
