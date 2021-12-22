@@ -21,13 +21,8 @@ function [dx, parout] = ode_2bp(t,x,mu,typeSim,varargin)
 % OUTPUT:
 %   dx       double [6x1]   state vector derivative               [-]
 %
-% CALLED FUNCTIONS: 
-%   astroConstants
-%   date2mjd2000
-%   ephMoon
-%   J2Pert
-%   MoonPer
-%   par2car
+% CALLED FUNCTIONS:  astroConstants, date2mjd2000, ephMoon, J2Pert, MoonPer
+%                    par2car
 %
 % NOTE: time can be omitted
 %
