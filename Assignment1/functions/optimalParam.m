@@ -1,4 +1,4 @@
-function [orbOpt] = optimalParam(data, satData, settings)
+function data = optimalParam(data, satData, settings)
 % optimalParam - Function to find the optimal RAAN and om to ensure maximum
 % distances from other objects orbiting around Earth. The latter are
 % computed through TLEs.
@@ -12,7 +12,7 @@ function [orbOpt] = optimalParam(data, satData, settings)
 %   settings   struct  [1x1]   settings struct                      [-]
 %
 % OUTPUT:
-%   dx       double [6x1]   state vector derivative                 [-]
+%   orbOpt     double  [1x6]   Optimal orbit keplerian parameters   [-]
 %
 % CALLED FUNCTIONS: date2mjd2000, SGP4, teme2eci, car2par, par2car,
 %                   parfor_progress
@@ -257,6 +257,9 @@ for i = 1:length(timespan)
         date2mjd2000([Yl MOl Dl Hl Ml Sl]));
 end
 
+
+%% SAVE OPTIMAL ORBIT PARAMETER
+data.optimal.orbIn = orbOpt;
 
 
 %% PLOT

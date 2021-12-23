@@ -37,18 +37,24 @@ addpath(genpath(currentPath));
 addpath(genpath('functions'))
 
 %% **************************** USER HERE *********************************
+% ! ATTENTION ! if OM and om are set to NaN, the first part of the script,
+% the choice of the latters, will be performed. Choose a finite value for
+% OM and om to skip the first part.
+
 %%% INITIAL ORBIT PARAMETERS ..............................................
-data.starting.date = [2021 12 20 12 0 0];      % [-]   Date time of the starting of orbit propagation
-data.starting.a = 7.2776e4;                    % [km]  Orbit semi-major axis
-data.starting.e = 0.6665;                      % [-]   Orbit eccentricity
-data.starting.i = 134.2783;                    % [deg] Orbit inclination
-data.starting.th = 0;                          % [deg] Orbit true anomaly
+data.starting.date = [2000 1 1 12 0 0];      % [-]   Date time of the starting of orbit propagation
+data.starting.a = 8350;                    % [km]  Orbit semi-major axis
+data.starting.e = 0.1976;                      % [-]   Orbit eccentricity
+data.starting.i = 60;                    % [deg] Orbit inclinationdata.starting.a = 7.2776e4;                    % [km]  Orbit semi-major axis
+data.starting.OM = 270;                        % [deg] Orbit RAAN
+data.starting.om = 45;                        % [deg] Orbit argument of pericenter
+data.starting.th = 230;                          % [deg] Orbit true anomaly
 
 %%% USED CONSTANTS
 data.constants.muE = astroConstants(13);       % [km^3/s^2] Planetary constant of the Earth
 
 %%% FIND OPTIMAL RAAN AND OM ..............................................
-data.optimal.nPeriod = 1;                     % [-] Number of periods the orbit is propagated for
+data.optimal.nPeriod = 1;                      % [-] Number of periods the orbit is propagated for
 data.optimal.nPoints = 100;                    % [-] Number of points for each period at which coordinates are computed
 data.optimal.nOM = 50;                         % [-] Number of RAAN that are calculated to find the optimal value
 data.optimal.nom = 50;                         % [-] Number of omega that are calculated to find the optimal value
@@ -56,80 +62,97 @@ settings.optimal.plot = true;                  % [-] True if plot are to be visu
 settings.optimal.movie = true;                 % [-] True if movies are to be created
 settings.optimal.parallel = true;              % [-] True if parallel computing is allowed
 
+%%% GROUNDTRACKS
+Tperiod = 2*pi * sqrt(data.starting.a^3/data.constants.muE);
+data.groundtracks.periods = [3.25*Tperiod, 24*60*60, 10*24*60*60];   % [s] Periods for which the groundtracks will be displayed
+data.groundtracks.k = 2;                                        % [-] Number of periods of the Earth
+data.groundtracks.m = 5;                                        % [-] Number of periods of the satellite
+settings.groundtracks.plot = true;                              % [-] True if plot are to be visulized
+settings.groundtracks.movie = true;                             % [-] True if movies are to be created
+settings.groundtracks.parallel = true;                          % [-] True if parallel computing is allowed
+
 
 %% **** FROM NOW ON, DO NOT CHANGE UNLESS YOU KNOW WHAT YOU ARE DOING *****
 % Retrieve given data
 a   = data.starting.a;
 e   = data.starting.e;
 i   = data.starting.i;
+OM  = data.starting.OM;
+om  = data.starting.om;
 th  = data.starting.th;
 muE = data.constants.muE;
 
 % Calculation
-data.starting.orbIn = [a, e, deg2rad(i), NaN, NaN, deg2rad(th)];      % [-] Given orbit initial parameters
+data.starting.orbIn = [a, e, deg2rad(i), OM, om, deg2rad(th)];        % [-] Given orbit initial parameters
 data.starting.Torbit = 2*pi * sqrt(a^3/muE);                          % [s] Given orbit period
 
 clearvars -except data settings
 
 %% RETRIEVE TLES ----------------------------------------------------------
-if exist(strcat(pwd, '\functions\initialize\TLEs.mat'), 'file')
-    load(strcat(pwd, '\functions\initialize\TLEs.mat'));
-    answer = questdlg({"WARNING: Since TLEs are reliable for a maximum of 30 days, use a TLEs data file uploaded in a date which is as close as possible to the satellite departure date.",...
-        "  ", strcat("Selected departure date:     ", ...
-        datestr(datetime(data.starting.date))),...
-        strcat("Last TLEs update:               ", satData.lastUpdate), ...
-        strcat("Actual date:                         ", datestr(datetime('now'))),...
-        "   ",...
-        'Do you want to upload actual date TLEs from Internet or use the existing one?'}, ...
-        'Dialog', 'Existing', 'New', 'Abort', 'Abort');
-    
-    % handle response
-    switch answer
-        case 'Existing'
-            fprintf('Using the TLEs file located in folder initialize... \n\n')
-            load(strcat(pwd, '\functions\initialize\TLEs.mat'));
-        case 'New'
-            fprintf('Generating new TLEs from Internet...\n');
-            retrieveTLEs
-            fprintf('New TLEs file generated!\n\n');
-            clearvars -except data satData settings
-        case 'Abort'
-            error('Simulation aborted')
+if isnan(data.starting.OM) && isnan(data.starting.om)
+    if exist(strcat(pwd, '\functions\initialize\TLEs.mat'), 'file')
+        load(strcat(pwd, '\functions\initialize\TLEs.mat'));
+        answer = questdlg({"WARNING: Since TLEs are reliable for a maximum of 30 days, use a TLEs data file uploaded in a date which is as close as possible to the satellite departure date.",...
+            "  ", strcat("Selected departure date:     ", ...
+            datestr(datetime(data.starting.date))),...
+            strcat("Last TLEs update:               ", satData.lastUpdate), ...
+            strcat("Actual date:                         ", datestr(datetime('now'))),...
+            "   ",...
+            'Do you want to upload actual date TLEs from Internet or use the existing one?'}, ...
+            'Dialog', 'Existing', 'New', 'Abort', 'Abort');
+
+        % handle response
+        switch answer
+            case 'Existing'
+                fprintf('Using the TLEs file located in folder initialize... \n\n')
+                load(strcat(pwd, '\functions\initialize\TLEs.mat'));
+            case 'New'
+                fprintf('Generating new TLEs from Internet...\n');
+                retrieveTLEs
+                fprintf('New TLEs file generated!\n\n');
+                clearvars -except data satData settings
+            case 'Abort'
+                error('Simulation aborted')
+        end
+    else
+        fprintf('No TLEs file was found in folder initialize, generating a new one...\n\n');
+        retrieveTLEs
     end
-else
-    fprintf('No TLEs file was found in folder initialize, generating a new one...\n\n');
-    retrieveTLEs
 end
 
 
 %% FIN OPTIMAL RAAN AND OM ------------------------------------------------
-[a] = optimalParam(data, satData, settings);
-
-
-%% PROPAGATE UNPERTURBED ORBIT
-% Time for: 1 orbit, 1 day, 10 days
-Tvec = [Torbit, 24*60*60, 20*Torbit];
-N = length(Tvec);
-T = cell(N, 1);
-Y = cell(N, 1);
-options = odeset('RelTol', 1e-13, 'AbsTol', 1e-14);
-
-[rr0, vv0] = par2car(orb, muE);
-Y0 = [rr0; vv0];
-labels = {'One orbit', 'One day', '10 days'};
-
-figure
-[Xs, Ys, Zs] = sphere(100);
-Xs = 3671*Xs;
-Ys = 3671*Ys;
-Zs = 3671*Zs;
-for i = 1:length(Tvec)
-    [T{i}, Y{i}] = ode113(@ode_2bp, [0 Tvec(i)], Y0, options, muE, 'cart');
-    subplot(1, 3, i)
-    plot3(Y{i}(:,1), Y{i}(:,2), Y{i}(:,3)); hold on; axis equal; grid on
-    surf(Xs, Ys, Zs)
-    title(labels(i))
+if isnan(data.starting.OM) && isnan(data.starting.om)
+    data = optimalParam(data, satData, settings);
 end
+
+%% GROUNDTRACKS
+data = GroundTrack(data, settings);
+
+% %% PROPAGATE UNPERTURBED ORBIT
+% % Time for: 1 orbit, 1 day, 10 days
+% Tvec = [Torbit, 24*60*60, 20*Torbit];
+% N = length(Tvec);
+% T = cell(N, 1);
+% Y = cell(N, 1);
+% options = odeset('RelTol', 1e-13, 'AbsTol', 1e-14);
+% 
+% [rr0, vv0] = par2car(orb, muE);
+% Y0 = [rr0; vv0];
+% labels = {'One orbit', 'One day', '10 days'};
+% 
+% figure
+% [Xs, Ys, Zs] = sphere(100);
+% Xs = 3671*Xs;
+% Ys = 3671*Ys;
+% Zs = 3671*Zs;
+% for i = 1:length(Tvec)
+%     [T{i}, Y{i}] = ode113(@ode_2bp, [0 Tvec(i)], Y0, options, muE, 'cart');
+%     subplot(1, 3, i)
+%     plot3(Y{i}(:,1), Y{i}(:,2), Y{i}(:,3)); hold on; axis equal; grid on
+%     surf(Xs, Ys, Zs)
+%     title(labels(i))
+% end
 
 % %%% GROUNDTRACK
 % GroundTrack(Tvec(3), orb, date0, 'unpert');
