@@ -104,11 +104,27 @@ if settings.groundtracks.plot
             str = strcat(num2str(days), " days");
         end
         figure('Name', strcat("Unperturbed - ", str), 'NumberTitle', 'off');
-        cdata = imread('earth.png');
-        imagesc([-180,180],[-90, 90],cdata); hold on;
-        plot(lonUnp{i}/pi*180, latUnp{i}/pi*180, '.g', 'markerSize', 0.5);
-        axis equal
-        xlim([-180, 180]); ylim([-90, 90]);
+        hold on;
+        axis equal;
+        set(gca,'XTick',[-180:30:180],'XTickMode','manual');
+        set(gca,'YTick',[-90:30:90],'YTickMode','manual');
+        xlim([-180,180]); ylim([-90,90]);
+        
+        image_file = 'earth.png';
+        cdata      = flip(imread(image_file));
+        imagesc([-180,180],[-90, 90],cdata);
+        
+
+        
+        plot(lonUnp{i}/pi*180,latUnp{i}/pi*180,'.g')
+        hold on 
+        plot(lonUnp{i}/pi*180,latUnp{i}/pi*180,'.r','Marker','square','MarkerIndices',1);
+        plot(lonUnp{i}(1)/pi*180,latUnp{i}(1)/pi*180,'ro','LineWidth',2);
+        plot(lonUnp{i}(end)/pi*180,latUnp{i}(end)/pi*180,'rs','LineWidth',2);
+        
+        
+        
+
     end
 
 end

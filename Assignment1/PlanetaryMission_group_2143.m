@@ -46,8 +46,8 @@ data.starting.date = [2000 1 1 12 0 0];      % [-]   Date time of the starting o
 data.starting.a = 8350;                    % [km]  Orbit semi-major axis
 data.starting.e = 0.1976;                      % [-]   Orbit eccentricity
 data.starting.i = 60;                    % [deg] Orbit inclinationdata.starting.a = 7.2776e4;                    % [km]  Orbit semi-major axis
-data.starting.OM = 270;                        % [deg] Orbit RAAN
-data.starting.om = 45;                        % [deg] Orbit argument of pericenter
+data.starting.OM = deg2rad(270);                        % [deg] Orbit RAAN
+data.starting.om = deg2rad(45);                        % [deg] Orbit argument of pericenter
 data.starting.th = 230;                          % [deg] Orbit true anomaly
 
 %%% USED CONSTANTS
