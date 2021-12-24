@@ -1,7 +1,7 @@
 %
-% PlanetaryMission_group_NAN
+% PlanetaryMission_group_2143
 %
-% Main script for group NAN for Assignment 1
+% Main script for group 2143 for Assignment 1
 %
 % CONTRIBUTORS:
 %   Rosato Davide          10618468     davide.rosato@mail.polimi.it
@@ -32,4 +32,35 @@ addpath(genpath(currentPath));
 % functions path
 addpath(genpath('functions'))
 
-%% CALCULATIONS
+
+%% STARTING PARAMETERS
+depDate = [2027 12 1 0 0 0];      % [-] Minimum departure date
+arrDate = [2067 12 1 23 59 59];   % [-] Maximum arrival date
+depPlanID   = 4;                  % [-] Departure planet ID
+flyByPlanID = 3;                  % [-] Fly-by planet ID
+arrPlanID   = 2;                  % [-] Arrival planet ID
+
+%% SELECTING TIME WINDOWS
+deltaD = 20;
+[DVfirstLeg, DVsecondLeg, DVTOT, daysSpan, TOF1span, TOF2span, DVTOTreal, dtTOTreal]...
+    = timeWindows(depPlanID, flyByPlanID, arrPlanID, depDate,...
+    arrDate, deltaD);
+
+
+%% PLOT
+figure
+I = 0 : 20 : (datenum(arrDate) - datenum(depDate));
+J = dtTOTreal;
+[a, b] = find(DVTOTreal ~= 0);
+[I, J] = meshgrid(I(a), J(b));
+
+surf(DVTOTreal')
+
+%%
+clc
+
+
+
+
+
+
