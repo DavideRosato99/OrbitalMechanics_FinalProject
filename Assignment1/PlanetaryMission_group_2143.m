@@ -42,7 +42,7 @@ addpath(genpath('functions'))
 % OM and om to skip the first part.
 
 %%% INITIAL ORBIT PARAMETERS ..............................................
-data.starting.date = [2000 1 1 12 0 0];        % [-]   Date time of the starting of orbit propagation
+data.starting.date = [2021 12 20 12 0 0];        % [-]   Date time of the starting of orbit propagation
 data.starting.a = 7.2776e4;                    % [km]  Orbit semi-major axis
 data.starting.e = 0.6665;                      % [-]   Orbit eccentricity
 data.starting.i = 134.2783;                    % [deg] Orbit inclinationdata.starting.a = 7.2776e4;                    % [km]  Orbit semi-major axis
@@ -65,12 +65,23 @@ settings.optimal.parallel = true;              % [-] True if parallel computing 
 %%% GROUNDTRACKS
 Tperiod = 2*pi * sqrt(data.starting.a^3/data.constants.muE);
 data.groundtracks.periods = [3.25*Tperiod, 24*60*60, 10*24*60*60];   % [s] Periods for which the groundtracks will be displayed
-data.groundtracks.k = 2;                                        % [-] Number of periods of the Earth
-data.groundtracks.m = 5;                                        % [-] Number of periods of the satellite
-settings.groundtracks.plot = true;                              % [-] True if plot are to be visulized
-settings.groundtracks.movie = true;                             % [-] True if movies are to be created
-settings.groundtracks.parallel = true;                          % [-] True if parallel computing is allowed
+data.groundtracks.k = 2;                                             % [-] Number of periods of the Earth
+data.groundtracks.m = 5;                                             % [-] Number of periods of the satellite
+settings.groundtracks.plot = true;                                   % [-] True if plot are to be visulized
+settings.groundtracks.movie = true;                                  % [-] True if movies are to be created
+settings.groundtracks.parallel = true;                               % [-] True if parallel computing is allowed
 
+%%% PROPAGATION
+%data.propagation.TmaxComp = 40*Tperiod;               % [s] Final ode integration time for computational comparison
+%data.propagation.deltaSpan1 = 13000 : 1000 : 17000;    % [-] CPU settling number of N step vector
+%data.propagation.deltaSpan2 = 17000 : 5000 : 117000;   % [-] Computational comparison number of N step
+data.propagation.TmaxComp = Tperiod;               % [s] Final ode integration time for computational comparison
+data.propagation.deltaSpan1 = 13000;    % [-] CPU settling number of N step vector
+data.propagation.deltaSpan2 = 17000;   % [-] Computational comparison number of N step
+data.propagation.Tmax = Tperiod;              % [s] Final ode integration time for orbit propagation
+settings.propagation.plot = true;                     % [-] True if propagation plot are to be visualized
+settings.propagation.movie = true;                    % [-] True if movies are to be created
+settings.propagation.parallel = true;                 % [-] True if parallel computing is allowed
 
 %% **** FROM NOW ON, DO NOT CHANGE UNLESS YOU KNOW WHAT YOU ARE DOING *****
 % Retrieve given data
@@ -126,41 +137,20 @@ if isnan(data.starting.OM) && isnan(data.starting.om)
     data = optimalParam(data, satData, settings);
 end
 
+
 %% GROUNDTRACKS
-data = GroundTrack(data, settings);
+%% data = GroundTrack(data, settings);
 
-% %% PROPAGATE UNPERTURBED ORBIT
-% % Time for: 1 orbit, 1 day, 10 days
-% Tvec = [Torbit, 24*60*60, 20*Torbit];
-% N = length(Tvec);
-% T = cell(N, 1);
-% Y = cell(N, 1);
-% options = odeset('RelTol', 1e-13, 'AbsTol', 1e-14);
-% 
-% [rr0, vv0] = par2car(orb, muE);
-% Y0 = [rr0; vv0];
-% labels = {'One orbit', 'One day', '10 days'};
-% 
-% figure
-% [Xs, Ys, Zs] = sphere(100);
-% Xs = 3671*Xs;
-% Ys = 3671*Ys;
-% Zs = 3671*Zs;
-% for i = 1:length(Tvec)
-%     [T{i}, Y{i}] = ode113(@ode_2bp, [0 Tvec(i)], Y0, options, muE, 'cart');
-%     subplot(1, 3, i)
-%     plot3(Y{i}(:,1), Y{i}(:,2), Y{i}(:,3)); hold on; axis equal; grid on
-%     surf(Xs, Ys, Zs)
-%     title(labels(i))
-% end
 
-% %%% GROUNDTRACK
-% GroundTrack(Tvec(3), orb, date0, 'unpert');
-% 
-% %%% REPEATING GROUNDTRACK
-% k = 12;
-% m = 1;
-% GroundTrack(Tvec(3), orb, date0, 'unpert', m, k);
+%% PROPAGATE PERTURBED ORBIT WITH CARTESIAN AND GAUSS EQUATIONS
+%% data = propagate(data, settings);
+
+%% REAL DATA
+
+
+
+
+
 
 %% PROPAGATE PERTURBED ORBIT
 % Time for: 1 orbit, 1 day, 10 days

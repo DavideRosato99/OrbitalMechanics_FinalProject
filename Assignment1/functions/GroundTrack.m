@@ -77,7 +77,6 @@ fprintf('100%%\n');
 %% REPEATING UNPERTURBED
 fprintf("Repeating unperturbed groundtrack:          ");
 str = fprintf('0%%\n');
-orbIn
 [raUnpRep, decUnpRep, lonUnpRep, latUnpRep, aUnpRep, tUnpRep] = GroundTrackCalc(orbIn, periods, green0, muE, omE, 'unpert', k, m);
 fprintf(repmat('\b', 1, str));
 fprintf('100%%\n');
