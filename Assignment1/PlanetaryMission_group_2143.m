@@ -42,13 +42,13 @@ addpath(genpath('functions'))
 % OM and om to skip the first part.
 
 %%% INITIAL ORBIT PARAMETERS ..............................................
-data.starting.date = [2000 1 1 12 0 0];      % [-]   Date time of the starting of orbit propagation
-data.starting.a = 8350;                    % [km]  Orbit semi-major axis
-data.starting.e = 0.1976;                      % [-]   Orbit eccentricity
-data.starting.i = 60;                    % [deg] Orbit inclinationdata.starting.a = 7.2776e4;                    % [km]  Orbit semi-major axis
-data.starting.OM = deg2rad(270);                        % [deg] Orbit RAAN
-data.starting.om = deg2rad(45);                        % [deg] Orbit argument of pericenter
-data.starting.th = 230;                          % [deg] Orbit true anomaly
+data.starting.date = [2000 1 1 12 0 0];        % [-]   Date time of the starting of orbit propagation
+data.starting.a = 7.2776e4;                    % [km]  Orbit semi-major axis
+data.starting.e = 0.6665;                      % [-]   Orbit eccentricity
+data.starting.i = 134.2783;                    % [deg] Orbit inclinationdata.starting.a = 7.2776e4;                    % [km]  Orbit semi-major axis
+data.starting.OM = 72;                         % [deg] Orbit RAAN
+data.starting.om = 45;                         % [deg] Orbit argument of pericenter
+data.starting.th = 0;                          % [deg] Orbit true anomaly
 
 %%% USED CONSTANTS
 data.constants.muE = astroConstants(13);       % [km^3/s^2] Planetary constant of the Earth
@@ -83,7 +83,7 @@ th  = data.starting.th;
 muE = data.constants.muE;
 
 % Calculation
-data.starting.orbIn = [a, e, deg2rad(i), OM, om, deg2rad(th)];        % [-] Given orbit initial parameters
+data.starting.orbIn = [a, e, deg2rad(i), deg2rad(OM), deg2rad(om), deg2rad(th)];        % [-] Given orbit initial parameters
 data.starting.Torbit = 2*pi * sqrt(a^3/muE);                          % [s] Given orbit period
 
 clearvars -except data settings
