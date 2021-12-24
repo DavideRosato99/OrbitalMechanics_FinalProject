@@ -42,10 +42,10 @@ addpath(genpath('functions'))
 % OM and om to skip the first part.
 
 %%% INITIAL ORBIT PARAMETERS ..............................................
-data.starting.date = [2021 12 20 12 0 0];        % [-]   Date time of the starting of orbit propagation
+data.starting.date = [2021 12 20 12 0 0];      % [-]   Date time of the starting of orbit propagation
 data.starting.a = 7.2776e4;                    % [km]  Orbit semi-major axis
 data.starting.e = 0.6665;                      % [-]   Orbit eccentricity
-data.starting.i = 134.2783;                    % [deg] Orbit inclinationdata.starting.a = 7.2776e4;                    % [km]  Orbit semi-major axis
+data.starting.i = 134.2783;                    % [deg] Orbit inclinationdata.starting.a = 7.2776e4;                    
 data.starting.OM = 72;                         % [deg] Orbit RAAN
 data.starting.om = 45;                         % [deg] Orbit argument of pericenter
 data.starting.th = 0;                          % [deg] Orbit true anomaly
@@ -82,6 +82,10 @@ data.propagation.Tmax = Tperiod;              % [s] Final ode integration time f
 settings.propagation.plot = true;                     % [-] True if propagation plot are to be visualized
 settings.propagation.movie = true;                    % [-] True if movies are to be created
 settings.propagation.parallel = true;                 % [-] True if parallel computing is allowed
+%%% REAL DATA COMPARISON
+data.realData.Tmax = 365*24*60*60;
+data.realData.nPoints = 365*100;
+
 
 %% **** FROM NOW ON, DO NOT CHANGE UNLESS YOU KNOW WHAT YOU ARE DOING *****
 % Retrieve given data
@@ -146,6 +150,8 @@ end
 %% data = propagate(data, settings);
 
 %% REAL DATA
+load(strcat(pwd,'\functions\initialize\TLEs.mat'));
+data = realData(data, satData, settings);
 
 
 
@@ -362,8 +368,6 @@ end
 % %     sat = plot3(Yorbit(i,1), Yorbit(i,2), Yorbit(i,3), 'ro', 'MarkerSize', 3);
 % %     drawnow limitrate
 % % end
-
-
 
 
 
