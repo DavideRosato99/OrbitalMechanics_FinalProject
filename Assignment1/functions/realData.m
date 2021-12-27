@@ -1,5 +1,6 @@
 function [data] = realData(data, satData, settings)
-% realData - Function to 
+% realData - Function to compare and validate the model created to describe
+% the evolution of a satellite's orbit
 %
 % PROTOTYPE
 %   [data] = realData(data, satData, settings)

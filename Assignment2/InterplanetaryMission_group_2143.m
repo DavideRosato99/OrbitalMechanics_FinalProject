@@ -45,6 +45,12 @@ data.starting.depPlanID   = 4;                      % [-] Departure planet ID (M
 data.starting.flyByPlanID = 3;                      % [-] Fly-by planet ID (Earth)
 data.starting.arrPlanID   = 2;                      % [-] Arrival planet ID (Venus)
 
+%%% USED CONSTANTS
+data.constants.muE = astroConstants(13);       % [km^3/s^2] Planetary constant of the Earth
+data.constants.muS = astroConstants(4);        % [km^3/s^2] Planetary constant of the Sun
+data.constants.AU  = astroConstants(2);        % [km] Astronomic unit
+data.constants.Re  = astroConstants(23);       % [km] Earth radius
+
 %%% TIME WINDOWS SELECTION
 data.timeWindows.nDep = 400;             % [days] delta days for departure date
 data.timeWindows.nTOF1 = 400;              % [-] Number of points in which TOF1 will be calculated
@@ -74,6 +80,15 @@ data = prova(data, settings);
 % clc
 
 
+
+%% FLY-BY
+
+data.flyby.hAtm    = 200; %(?)
+data.flyby.VVminus = %;
+data.flyby.VVplus  = %;
+ 
+[r_p, h_ga, Delta, delta_V_poweredFB,e_minus,e_plus,a_minus,a_plus] = ...
+    our_powered_Flyby(data, settings)
 
 
 
