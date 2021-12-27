@@ -21,8 +21,9 @@ DVTOT       = NaN(N, Ntof1, Ntof2);
 dtTOT       = NaN(N, Ntof1, Ntof2);
 dtTOTreal   = [];
 date = depDate;
+
 for i = 1:N
-    
+    i
     d = daysSpan(i);
     date(3) = depDate(3) + d;
     [Yl, Mol, Dl] = ymd(datetime(date));

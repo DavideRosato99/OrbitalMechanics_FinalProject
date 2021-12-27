@@ -18,6 +18,10 @@ close all
 clear all
 clc
 
+set(groot,'defaultAxesTickLabelInterpreter','latex');
+set(groot,'defaulttextinterpreter','latex');
+set(groot,'defaultLegendInterpreter','latex');
+
 %% SET PATH
 % global path
 filePath = fileparts(mfilename('fullpath'));
@@ -33,31 +37,41 @@ addpath(genpath(currentPath));
 addpath(genpath('functions'))
 
 
-%% STARTING PARAMETERS
-depDate = [2027 12 1 0 0 0];      % [-] Minimum departure date
-arrDate = [2067 12 1 23 59 59];   % [-] Maximum arrival date
-depPlanID   = 4;                  % [-] Departure planet ID
-flyByPlanID = 3;                  % [-] Fly-by planet ID
-arrPlanID   = 2;                  % [-] Arrival planet ID
+%% **************************** USER HERE *********************************
+%%% STARTING DATA
+data.starting.depDate     = [2027 12 1 0 0 0];      % [Y M D H m S] Minimum departure date
+data.starting.arrDate     = [2067 12 1 0 0 0];      % [Y M D H m S] Maximum arrival date
+data.starting.depPlanID   = 4;                      % [-] Departure planet ID (Mars)
+data.starting.flyByPlanID = 3;                      % [-] Fly-by planet ID (Earth)
+data.starting.arrPlanID   = 2;                      % [-] Arrival planet ID (Venus)
+
+%%% TIME WINDOWS SELECTION
+data.timeWindows.nDep = 400;             % [days] delta days for departure date
+data.timeWindows.nTOF1 = 400;              % [-] Number of points in which TOF1 will be calculated
+data.timeWindows.nTOF2 = 3;              % [-] Number of points in which TOF2 will be calculated
+settings.timeWindows.plot = true;         % [-] True if plot are to be visulized
+settings.timeWindows.parallel = true;     % [-] True if parallel computing is allowed
 
 %% SELECTING TIME WINDOWS
-deltaD = 20;
-[DVfirstLeg, DVsecondLeg, DVTOT, daysSpan, TOF1span, TOF2span, DVTOTreal, dtTOTreal]...
-    = timeWindows(depPlanID, flyByPlanID, arrPlanID, depDate,...
-    arrDate, deltaD);
+% [DVfirstLeg, DVsecondLeg, DVTOT, daysSpan, TOF1span, TOF2span, DVTOTreal, dtTOTreal]...
+%     = timeWindows(depPlanID, flyByPlanID, arrPlanID, depDate,...
+%     arrDate, deltaD);
+
+data = prova(data, settings);
 
 
-%% PLOT
-figure
-I = 0 : 20 : (datenum(arrDate) - datenum(depDate));
-J = dtTOTreal;
-[a, b] = find(DVTOTreal ~= 0);
-[I, J] = meshgrid(I(a), J(b));
 
-surf(DVTOTreal')
-
-%%
-clc
+% %% PLOT
+% figure
+% I = 0 : 20 : (datenum(arrDate) - datenum(depDate));
+% J = dtTOTreal;
+% [a, b] = find(DVTOTreal ~= 0);
+% [I, J] = meshgrid(I(a), J(b));
+% 
+% surf(DVTOTreal')
+% 
+% %%
+% clc
 
 
 
