@@ -65,6 +65,29 @@ settings.timeWindows.parallel = true;     % [-] True if parallel computing is al
 
 data = prova(data, settings);
 
+%% grid search
+
+data = gridSearch(sata, settings);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
