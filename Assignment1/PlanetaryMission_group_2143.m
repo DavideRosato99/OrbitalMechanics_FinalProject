@@ -159,34 +159,34 @@ data = realData(data, satData, settings);
 
 
 %% PROPAGATE PERTURBED ORBIT
-%Time for: 1 orbit, 1 day, 10 days
-Tvec = [Torbit, 24*60*60, 20*Torbit];
-N = length(Tvec);
-T = cell(N, 1);
-Y = cell(N, 1);
-options = odeset('RelTol', 1e-13, 'AbsTol', 1e-14);
-
-[rr0, vv0] = par2car(orb, muE);
-Y0 = [rr0; vv0];
-labels = {'One orbit', 'One day', '10 days'};
-
-figure
-[Xs, Ys, Zs] = sphere(100);
-Xs = 3671*Xs;
-Ys = 3671*Ys;
-Zs = 3671*Zs;
-
-[Ye0, MO0, D0] = ymd(date0);
-[H0, M0, S0] = hms(date0);
-
-for i = 1:length(Tvec)
-    [T{i}, Y{i}] = ode113(@ode_2bp, [0 Tvec(i)], Y0, options, muE, 'cart', ...
-        datetime([Ye0, MO0, D0, H0, M0, S0]));
-    subplot(1, 3, i)
-    plot3(Y{i}(:,1), Y{i}(:,2), Y{i}(:,3)); hold on; axis equal; grid on
-    surf(Xs, Ys, Zs)
-    title(labels(i))
-end
+% %Time for: 1 orbit, 1 day, 10 days
+% Tvec = [Torbit, 24*60*60, 20*Torbit];
+% N = length(Tvec);
+% T = cell(N, 1);
+% Y = cell(N, 1);
+% options = odeset('RelTol', 1e-13, 'AbsTol', 1e-14);
+% 
+% [rr0, vv0] = par2car(orb, muE);
+% Y0 = [rr0; vv0];
+% labels = {'One orbit', 'One day', '10 days'};
+% 
+% figure
+% [Xs, Ys, Zs] = sphere(100);
+% Xs = 3671*Xs;
+% Ys = 3671*Ys;
+% Zs = 3671*Zs;
+% 
+% [Ye0, MO0, D0] = ymd(date0);
+% [H0, M0, S0] = hms(date0);
+% 
+% for i = 1:length(Tvec)
+%     [T{i}, Y{i}] = ode113(@ode_2bp, [0 Tvec(i)], Y0, options, muE, 'cart', ...
+%         datetime([Ye0, MO0, D0, H0, M0, S0]));
+%     subplot(1, 3, i)
+%     plot3(Y{i}(:,1), Y{i}(:,2), Y{i}(:,3)); hold on; axis equal; grid on
+%     surf(Xs, Ys, Zs)
+%     title(labels(i))
+% end
 
 %%% GROUNDTRACK
 GroundTrack(Tvec(3), orb, date0, 'pert');
@@ -198,176 +198,176 @@ GroundTrack(Tvec(3), orb, date0, 'pert', m, k);
 % 
 % 
 % 
-% %% CARTESIAN AND GAUSS UNPERTURBED
-% options = odeset('RelTol', 1e-13, 'AbsTol', 1e-14);
-% [rr0, vv0] = par2car(orb, muE);
-% Y0 = [rr0; vv0];
-% [Tcart, Ycart] = ode113(@ode_2bp, [0 100*Torbit], Y0, options, muE, 'cart');
-% orb
-% [Tgauss, Ygauss] = ode113(@ode_2bp, [0 100*Torbit], orb, options, muE, 'gauss');
-% 
-% for i = 1:length(Tgauss)
-%     [Ygauss(i, 1:3), Ygauss(i, 4:6)] = par2car(Ygauss(i, :), muE);
-% end
-% figure
-% plot3(Ycart(:,1),Ycart(:,2),Ycart(:,3))
-% hold on
-% plot3(Ygauss(:,1),Ygauss(:,2),Ygauss(:,3))
-% 
-% %% CARTESIAN AND GAUSS PERTURBED
-% options = odeset('RelTol', 1e-13, 'AbsTol', 1e-14);
-% [rr0, vv0] = par2car(orb, muE);
-% Y0 = [rr0; vv0];
-% 
-% [Ye0, MO0, D0] = ymd(date0);
-% [H0, M0, S0] = hms(date0);
-% 
-% [Tcart, Ycart] = ode113(@ode_2bp, [0 100*Torbit], Y0, options, muE, 'cart',...
-%     datetime([Ye0, MO0, D0, H0, M0, S0]));
-% [Tgauss, Ygauss] = ode113(@ode_2bp, [0 100*Torbit], orb, options, muE, 'gauss', ...
-%     datetime([Ye0, MO0, D0, H0, M0, S0]));
-% 
-% % for i = 1:length(Tgauss)
-% %     [Ygauss(i, 1:3), Ygauss(i, 4:6)] = par2car(Ygauss(i, :), muE);
-% % end
-% 
-% %%
-% for i = 1:length(Tcart)
-%     orb = car2par(Ycart(i,1:3), Ycart(i,4:6), muE);
-%     a(i) = orb(1);
-% end
-% 
-% figure
-% plot3(Ygauss(:,1),Ygauss(:,2),Ygauss(:,3))
-% legend('cart','gauss')
-% 
-% 
-% %% FILTER
-% [Tgauss, Ygauss] = ode113(@ode_2bp, [0 1000*Torbit], orb, options, muE, 'gauss', ...
-%     datetime([Ye0, MO0, D0, H0, M0, S0]));
-% [perturbations] = recallOdeFcn(@ode_2bp, Tgauss, Ygauss, muE, 'gauss', datetime([Ye0, MO0, D0, H0, M0, S0]));
-% 
-% rr = zeros(3, length(Tgauss)); vv = zeros(3, length(Tgauss));
-% for i = 1:length(Tgauss)
-%     [rr(:,i), vv(:,i)] = par2car(Ygauss(i,:), muE);
-% end
-% 
-% %%
-% close all
-% 
-% figure('Name','a','NumberTitle','off');
-% plot(Tgauss, Ygauss(:,1)); grid on;
-% hold on;
-% plot(Tgauss, movmean(Ygauss(:,1), 15000), 'LineWidth', 2)
-% title('Semi major axis');
-% xlabel('Time [s]'); ylabel('a [km]');
-% 
-% figure('Name','e','NumberTitle','off');
-% plot(Tgauss, Ygauss(:,2)); grid on;
-% hold on;
-% plot(Tgauss, movmean(Ygauss(:,2), 15000), 'LineWidth', 2)
-% title('Eccentricity');
-% xlabel('Time [s]'); ylabel('e [-]');
-% 
-% figure('Name','i','NumberTitle','off');
-% plot(Tgauss, wrapTo360(Ygauss(:,3)*180/pi)); grid on;
-% hold on;
-% plot(Tgauss, wrapTo360(movmean(Ygauss(:,3)*180/pi, 15000)), 'LineWidth', 2)
-% title('Inclination');
-% xlabel('Time [s]'); ylabel('i [deg]');
-% 
-% figure('Name','aJ2','NumberTitle','off');
-% plot(Tgauss, vecnorm(perturbations.aJ2)); grid on;
-% hold on;
-% title('aJ2');
-% xlabel('Time [s]'); ylabel('aJ2 [km/$s^2$]');
-% 
-% figure('Name','aMOON','NumberTitle','off');
-% plot(Tgauss, vecnorm(perturbations.aMOON)); grid on;
-% hold on;
-% title('aMOON');
-% xlabel('Time [s]'); ylabel('aMOON [km/$s^2$]');
-% 
-% figure('Name','perturbations acc.','NumberTitle','off');
-% plot(Tgauss, vecnorm(perturbations.aMOON + perturbations.aJ2)); grid on;
-% hold on;
-% plot(Tgauss, movmean(vecnorm(perturbations.aMOON + perturbations.aJ2), Tgauss(end), 'SamplePoints', Tgauss,...
-%     'endpoints', 'shrink'), 'LineWidth', 2)
-% title('a Pert');
-% xlabel('Time [s]'); ylabel('a pert [km/$s^2$]');
-% 
-% figure('Name','Position','NumberTitle','off');
-% plot(Tgauss, vecnorm(rr)); grid on;
-% hold on;
-% plot(Tgauss, movmean(vecnorm(rr), Tgauss(end), 'SamplePoints', Tgauss,...
-%     'endpoints', 'shrink'), 'LineWidth', 2)
-% title('rr');
-% xlabel('Time [s]'); ylabel('r [km]');
-% 
-% %%
-% figure
-% colormap = parula(length(Tgauss));
-% for i = 2:10:length(Tgauss)
-%     plot3([rr(1,i) rr(1, i-1)], [rr(2,i) rr(2, i-1)], [rr(3,i) rr(3, i-1)], ...
-%         'color', colormap(i, :));
-%     hold on
-% end
-% 
-% 
-% 
-% 
-% %% PLOT ------------------------------------------------------------------
-% % figure('Name','Satellite distance from TLEs','NumberTitle','off');
-% % [OMM, OM] = meshgrid(rad2deg(OmLoop), rad2deg(omLoop));
-% % surf(OMM, OM, MINdis'); hold on;
-% % shading interp
-% % xlabel('$\Omega [deg]$'); ylabel('$\omega [deg]$'); zlabel('$|r_{sat}-r_{TLEs}|_{min}$')
-% % BEST = max(max(MINdis));
-% % [i1, i2] = find(MINdis == BEST);
-% % plot3(OmLoop(i1)*180/pi, omLoop(i2)*180/pi, BEST, 'ro')
-% % fprintf('\nOPTIMAL OM and om:\nOM = %.2f\nom = %.2f\n\n', OmLoop(i1)*180/pi, omLoop(i2)*180/pi)
-% % 
-% % figure('Name','Satellite distance from TLEs - exponential','NumberTitle','off');
-% % [OMM, OM] = meshgrid(rad2deg(OmLoop), rad2deg(omLoop));
-% % surf(OMM, OM, MINdisMod'); hold on;
-% % shading interp
-% % xlabel('$\Omega [deg]$'); ylabel('$\omega [deg]$'); zlabel('$f(\Omega,\omega)$')
-% % BESTmod = max(max(MINdisMod));
-% % [i1, i2] = find(MINdisMod == BESTmod);
-% % plot3(OmLoop(i1)*180/pi, omLoop(i2)*180/pi, BESTmod, 'ro')
-% % fprintf('\nOPTIMAL OM and om with exponential cost function:\nOM = %.2f\nom = %.2f\n\n', OmLoop(i1)*180/pi, omLoop(i2)*180/pi)
-% % 
-% % Yorbit = Yorb{(i1-1)*J + i2};
-% % 
-% % 
-% % %%
-% % figure('Name','Best orbit evolution','NumberTitle','off');
-% % [rteme, vteme] = SGP8(Y, D + hms2fracday(H, M, S), NORAD_TLEs(indexes,:));
-% % p = plot3(rteme(:, 1), rteme(:, 2), rteme(:, 3), 'go', 'MarkerSize', 1);
-% % axis equal; hold on; grid on
-% % plot3(Yorbit(:,1), Yorbit(:,2), Yorbit(:,3), 'r')
-% % sat = plot3(Yorbit(1,1), Yorbit(1,2), Yorbit(1,3), 'ro', 'MarkerSize', 3);
-% % xlim([-raMax raMax])
-% % ylim([-raMax raMax])
-% % zlim([-raMax raMax])
-% % [Xs, Ys, Zs] = sphere(100);
-% % Xs = 3671*Xs;
-% % Ys = 3671*Ys;
-% % Zs = 3671*Zs;
-% % surf(Xs, Ys, Zs)
-% % 
-% % for i = 1:length(timespan)
-% %     t = timespan(i);
-% %     date = datetime([Y MO D H M S+t]);
-% %     [Hl, Ml, Sl] = hms(date);
-% %     fracDay = day(date) + hms2fracday(Hl, Ml, Sl);
-% %     [rteme, vteme] = SGP8(year(date), fracDay, NORAD_TLEs(indexes,:));
-% %     delete(p)
-% %     delete(sat)
-% %     p = plot3(rteme(:, 1), rteme(:, 2), rteme(:, 3), 'go', 'MarkerSize', 2);
-% %     sat = plot3(Yorbit(i,1), Yorbit(i,2), Yorbit(i,3), 'ro', 'MarkerSize', 3);
-% %     drawnow limitrate
-% % end
+% CARTESIAN AND GAUSS UNPERTURBED
+options = odeset('RelTol', 1e-13, 'AbsTol', 1e-14);
+[rr0, vv0] = par2car(orb, muE);
+Y0 = [rr0; vv0];
+[Tcart, Ycart] = ode113(@ode_2bp, [0 100*Torbit], Y0, options, muE, 'cart');
+orb
+[Tgauss, Ygauss] = ode113(@ode_2bp, [0 100*Torbit], orb, options, muE, 'gauss');
+
+for i = 1:length(Tgauss)
+    [Ygauss(i, 1:3), Ygauss(i, 4:6)] = par2car(Ygauss(i, :), muE);
+end
+figure
+plot3(Ycart(:,1),Ycart(:,2),Ycart(:,3))
+hold on
+plot3(Ygauss(:,1),Ygauss(:,2),Ygauss(:,3))
+
+% CARTESIAN AND GAUSS PERTURBED
+options = odeset('RelTol', 1e-13, 'AbsTol', 1e-14);
+[rr0, vv0] = par2car(orb, muE);
+Y0 = [rr0; vv0];
+
+[Ye0, MO0, D0] = ymd(date0);
+[H0, M0, S0] = hms(date0);
+
+[Tcart, Ycart] = ode113(@ode_2bp, [0 100*Torbit], Y0, options, muE, 'cart',...
+    datetime([Ye0, MO0, D0, H0, M0, S0]));
+[Tgauss, Ygauss] = ode113(@ode_2bp, [0 100*Torbit], orb, options, muE, 'gauss', ...
+    datetime([Ye0, MO0, D0, H0, M0, S0]));
+
+for i = 1:length(Tgauss)
+    [Ygauss(i, 1:3), Ygauss(i, 4:6)] = par2car(Ygauss(i, :), muE);
+end
+
+%
+for i = 1:length(Tcart)
+    orb = car2par(Ycart(i,1:3), Ycart(i,4:6), muE);
+    a(i) = orb(1);
+end
+
+figure
+plot3(Ygauss(:,1),Ygauss(:,2),Ygauss(:,3))
+legend('cart','gauss')
+
+
+% FILTER
+[Tgauss, Ygauss] = ode113(@ode_2bp, [0 1000*Torbit], orb, options, muE, 'gauss', ...
+    datetime([Ye0, MO0, D0, H0, M0, S0]));
+[perturbations] = recallOdeFcn(@ode_2bp, Tgauss, Ygauss, muE, 'gauss', datetime([Ye0, MO0, D0, H0, M0, S0]));
+
+rr = zeros(3, length(Tgauss)); vv = zeros(3, length(Tgauss));
+for i = 1:length(Tgauss)
+    [rr(:,i), vv(:,i)] = par2car(Ygauss(i,:), muE);
+end
+
+%
+close all
+
+figure('Name','a','NumberTitle','off');
+plot(Tgauss, Ygauss(:,1)); grid on;
+hold on;
+plot(Tgauss, movmean(Ygauss(:,1), 15000), 'LineWidth', 2)
+title('Semi major axis');
+xlabel('Time [s]'); ylabel('a [km]');
+
+figure('Name','e','NumberTitle','off');
+plot(Tgauss, Ygauss(:,2)); grid on;
+hold on;
+plot(Tgauss, movmean(Ygauss(:,2), 15000), 'LineWidth', 2)
+title('Eccentricity');
+xlabel('Time [s]'); ylabel('e [-]');
+
+figure('Name','i','NumberTitle','off');
+plot(Tgauss, wrapTo360(Ygauss(:,3)*180/pi)); grid on;
+hold on;
+plot(Tgauss, wrapTo360(movmean(Ygauss(:,3)*180/pi, 15000)), 'LineWidth', 2)
+title('Inclination');
+xlabel('Time [s]'); ylabel('i [deg]');
+
+figure('Name','aJ2','NumberTitle','off');
+plot(Tgauss, vecnorm(perturbations.aJ2)); grid on;
+hold on;
+title('aJ2');
+xlabel('Time [s]'); ylabel('aJ2 [km/$s^2$]');
+
+figure('Name','aMOON','NumberTitle','off');
+plot(Tgauss, vecnorm(perturbations.aMOON)); grid on;
+hold on;
+title('aMOON');
+xlabel('Time [s]'); ylabel('aMOON [km/$s^2$]');
+
+figure('Name','perturbations acc.','NumberTitle','off');
+plot(Tgauss, vecnorm(perturbations.aMOON + perturbations.aJ2)); grid on;
+hold on;
+plot(Tgauss, movmean(vecnorm(perturbations.aMOON + perturbations.aJ2), Tgauss(end), 'SamplePoints', Tgauss,...
+    'endpoints', 'shrink'), 'LineWidth', 2)
+title('a Pert');
+xlabel('Time [s]'); ylabel('a pert [km/$s^2$]');
+
+figure('Name','Position','NumberTitle','off');
+plot(Tgauss, vecnorm(rr)); grid on;
+hold on;
+plot(Tgauss, movmean(vecnorm(rr), Tgauss(end), 'SamplePoints', Tgauss,...
+    'endpoints', 'shrink'), 'LineWidth', 2)
+title('rr');
+xlabel('Time [s]'); ylabel('r [km]');
+
+%
+figure
+colormap = parula(length(Tgauss));
+for i = 2:10:length(Tgauss)
+    plot3([rr(1,i) rr(1, i-1)], [rr(2,i) rr(2, i-1)], [rr(3,i) rr(3, i-1)], ...
+        'color', colormap(i, :));
+    hold on
+end
+
+
+
+
+% PLOT ------------------------------------------------------------------
+figure('Name','Satellite distance from TLEs','NumberTitle','off');
+[OMM, OM] = meshgrid(rad2deg(OmLoop), rad2deg(omLoop));
+surf(OMM, OM, MINdis'); hold on;
+shading interp
+xlabel('$\Omega [deg]$'); ylabel('$\omega [deg]$'); zlabel('$|r_{sat}-r_{TLEs}|_{min}$')
+BEST = max(max(MINdis));
+[i1, i2] = find(MINdis == BEST);
+plot3(OmLoop(i1)*180/pi, omLoop(i2)*180/pi, BEST, 'ro')
+fprintf('\nOPTIMAL OM and om:\nOM = %.2f\nom = %.2f\n\n', OmLoop(i1)*180/pi, omLoop(i2)*180/pi)
+
+figure('Name','Satellite distance from TLEs - exponential','NumberTitle','off');
+[OMM, OM] = meshgrid(rad2deg(OmLoop), rad2deg(omLoop));
+surf(OMM, OM, MINdisMod'); hold on;
+shading interp
+xlabel('$\Omega [deg]$'); ylabel('$\omega [deg]$'); zlabel('$f(\Omega,\omega)$')
+BESTmod = max(max(MINdisMod));
+[i1, i2] = find(MINdisMod == BESTmod);
+plot3(OmLoop(i1)*180/pi, omLoop(i2)*180/pi, BESTmod, 'ro')
+fprintf('\nOPTIMAL OM and om with exponential cost function:\nOM = %.2f\nom = %.2f\n\n', OmLoop(i1)*180/pi, omLoop(i2)*180/pi)
+
+Yorbit = Yorb{(i1-1)*J + i2};
+
+
+%%
+figure('Name','Best orbit evolution','NumberTitle','off');
+[rteme, vteme] = SGP8(Y, D + hms2fracday(H, M, S), NORAD_TLEs(indexes,:));
+p = plot3(rteme(:, 1), rteme(:, 2), rteme(:, 3), 'go', 'MarkerSize', 1);
+axis equal; hold on; grid on
+plot3(Yorbit(:,1), Yorbit(:,2), Yorbit(:,3), 'r')
+sat = plot3(Yorbit(1,1), Yorbit(1,2), Yorbit(1,3), 'ro', 'MarkerSize', 3);
+xlim([-raMax raMax])
+ylim([-raMax raMax])
+zlim([-raMax raMax])
+[Xs, Ys, Zs] = sphere(100);
+Xs = 3671*Xs;
+Ys = 3671*Ys;
+Zs = 3671*Zs;
+surf(Xs, Ys, Zs)
+
+for i = 1:length(timespan)
+    t = timespan(i);
+    date = datetime([Y MO D H M S+t]);
+    [Hl, Ml, Sl] = hms(date);
+    fracDay = day(date) + hms2fracday(Hl, Ml, Sl);
+    [rteme, vteme] = SGP8(year(date), fracDay, NORAD_TLEs(indexes,:));
+    delete(p)
+    delete(sat)
+    p = plot3(rteme(:, 1), rteme(:, 2), rteme(:, 3), 'go', 'MarkerSize', 2);
+    sat = plot3(Yorbit(i,1), Yorbit(i,2), Yorbit(i,3), 'ro', 'MarkerSize', 3);
+    drawnow limitrate
+end
 
 
 
