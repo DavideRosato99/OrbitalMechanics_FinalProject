@@ -52,9 +52,9 @@ data.constants.AU  = astroConstants(2);        % [km] Astronomic unit
 data.constants.Re  = astroConstants(23);       % [km] Earth radius
 
 %%% TIME WINDOWS SELECTION
-data.timeWindows.nDep = 400;             % [days] delta days for departure date
-data.timeWindows.nTOF1 = 400;              % [-] Number of points in which TOF1 will be calculated
-data.timeWindows.nTOF2 = 3;              % [-] Number of points in which TOF2 will be calculated
+data.timeWindows.nDep = 100;             % [days] delta days for departure date
+data.timeWindows.nTOF1 = 100;              % [-] Number of points in which TOF1 will be calculated
+data.timeWindows.nTOF2 = 100;              % [-] Number of points in which TOF2 will be calculated
 settings.timeWindows.plot = true;         % [-] True if plot are to be visulized
 settings.timeWindows.parallel = true;     % [-] True if parallel computing is allowed
 
@@ -64,31 +64,6 @@ settings.timeWindows.parallel = true;     % [-] True if parallel computing is al
 %     arrDate, deltaD);
 
 data = prova(data, settings);
-
-
-
-% %% PLOT
-% figure
-% I = 0 : 20 : (datenum(arrDate) - datenum(depDate));
-% J = dtTOTreal;
-% [a, b] = find(DVTOTreal ~= 0);
-% [I, J] = meshgrid(I(a), J(b));
-% 
-% surf(DVTOTreal')
-% 
-% %%
-% clc
-
-
-
-%% FLY-BY
-
-data.flyby.hAtm    = 200; %(?)
-data.flyby.VVminus = %;
-data.flyby.VVplus  = %;
- 
-[r_p, h_ga, Delta, delta_V_poweredFB,e_minus,e_plus,a_minus,a_plus] = ...
-    our_powered_Flyby(data, settings)
 
 
 
