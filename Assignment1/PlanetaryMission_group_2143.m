@@ -159,42 +159,42 @@ data = realData(data, satData, settings);
 
 
 %% PROPAGATE PERTURBED ORBIT
-% Time for: 1 orbit, 1 day, 10 days
-% Tvec = [Torbit, 24*60*60, 20*Torbit];
-% N = length(Tvec);
-% T = cell(N, 1);
-% Y = cell(N, 1);
-% options = odeset('RelTol', 1e-13, 'AbsTol', 1e-14);
-% 
-% [rr0, vv0] = par2car(orb, muE);
-% Y0 = [rr0; vv0];
-% labels = {'One orbit', 'One day', '10 days'};
-% 
-% figure
-% [Xs, Ys, Zs] = sphere(100);
-% Xs = 3671*Xs;
-% Ys = 3671*Ys;
-% Zs = 3671*Zs;
-% 
-% [Ye0, MO0, D0] = ymd(date0);
-% [H0, M0, S0] = hms(date0);
-% 
-% for i = 1:length(Tvec)
-%     [T{i}, Y{i}] = ode113(@ode_2bp, [0 Tvec(i)], Y0, options, muE, 'cart', ...
-%         datetime([Ye0, MO0, D0, H0, M0, S0]));
-%     subplot(1, 3, i)
-%     plot3(Y{i}(:,1), Y{i}(:,2), Y{i}(:,3)); hold on; axis equal; grid on
-%     surf(Xs, Ys, Zs)
-%     title(labels(i))
-% end
-% 
-% % %%% GROUNDTRACK
-% % GroundTrack(Tvec(3), orb, date0, 'pert');
-% % 
-% % %%% REPEATING GROUNDTRACK
-% % k = 12;
-% % m = 1;
-% % GroundTrack(Tvec(3), orb, date0, 'pert', m, k);
+%Time for: 1 orbit, 1 day, 10 days
+Tvec = [Torbit, 24*60*60, 20*Torbit];
+N = length(Tvec);
+T = cell(N, 1);
+Y = cell(N, 1);
+options = odeset('RelTol', 1e-13, 'AbsTol', 1e-14);
+
+[rr0, vv0] = par2car(orb, muE);
+Y0 = [rr0; vv0];
+labels = {'One orbit', 'One day', '10 days'};
+
+figure
+[Xs, Ys, Zs] = sphere(100);
+Xs = 3671*Xs;
+Ys = 3671*Ys;
+Zs = 3671*Zs;
+
+[Ye0, MO0, D0] = ymd(date0);
+[H0, M0, S0] = hms(date0);
+
+for i = 1:length(Tvec)
+    [T{i}, Y{i}] = ode113(@ode_2bp, [0 Tvec(i)], Y0, options, muE, 'cart', ...
+        datetime([Ye0, MO0, D0, H0, M0, S0]));
+    subplot(1, 3, i)
+    plot3(Y{i}(:,1), Y{i}(:,2), Y{i}(:,3)); hold on; axis equal; grid on
+    surf(Xs, Ys, Zs)
+    title(labels(i))
+end
+
+%%% GROUNDTRACK
+GroundTrack(Tvec(3), orb, date0, 'pert');
+
+%%% REPEATING GROUNDTRACK
+k = 12;
+m = 1;
+GroundTrack(Tvec(3), orb, date0, 'pert', m, k);
 % 
 % 
 % 
