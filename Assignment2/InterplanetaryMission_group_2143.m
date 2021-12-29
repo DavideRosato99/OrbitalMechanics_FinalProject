@@ -52,9 +52,9 @@ data.constants.AU  = astroConstants(2);        % [km] Astronomic unit
 data.constants.Re  = astroConstants(23);       % [km] Earth radius
 
 %%% TIME WINDOWS SELECTION
-data.timeWindows.nDep = 100;             % [days] delta days for departure date
-data.timeWindows.nTOF1 = 100;              % [-] Number of points in which TOF1 will be calculated
-data.timeWindows.nTOF2 = 100;              % [-] Number of points in which TOF2 will be calculated
+data.timeWindows.nDep  = 100;             % [days] delta days for departure date
+data.timeWindows.nTOF1 = 100;             % [-] Number of points in which TOF1 will be calculated
+data.timeWindows.nTOF2 = 100;             % [-] Number of points in which TOF2 will be calculated
 settings.timeWindows.plot = true;         % [-] True if plot are to be visulized
 settings.timeWindows.parallel = true;     % [-] True if parallel computing is allowed
 
@@ -63,11 +63,12 @@ settings.timeWindows.parallel = true;     % [-] True if parallel computing is al
 %     = timeWindows(depPlanID, flyByPlanID, arrPlanID, depDate,...
 %     arrDate, deltaD);
 
-data = prova(data, settings);
+%data = prova(data, settings);
 
-%% grid search
-
-data = gridSearch(sata, settings);
+%% GRID SEARCH
+data.timeWindows.depDate = [2044,2,27,8,21,56.3843509521484];
+data.timeWindows.arrDate = [2055,6,18,14,24,49.3654221191406];
+data = gridSearch(data, settings);
 
 
 

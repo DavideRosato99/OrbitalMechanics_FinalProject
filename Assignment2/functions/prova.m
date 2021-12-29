@@ -244,9 +244,9 @@ xline(dateOptDep)
 dateOptDep = dateOptDep;
 date = depDate;
 date(6) = date(6) + dateOptDep*24*3600;
-[YL, MoL, DL] = ymd(datetime(date));
-[HL, ML, SL]  = hms(datetime(date));
-dateOptDepString = datestr([YL MoL DL HL ML SL])
+[YLLL, MoLLL, DLLL] = ymd(datetime(date));
+[HLLL, MLLL, SLLL]  = hms(datetime(date));
+dateOptDepString = datestr([YLLL MoLLL DLLL HLLL MLLL SLLL])
 
 %%%
 arrArrVec2 = linspace(dateOptFlyBy*24*3600, TOTdays*24*3600, nTOF2);
@@ -323,7 +323,7 @@ data.timeWindows.FlyByDays = arrFlyByVec/(24*3600);
 data.timeWindows.DVsecondLeg = DVsecondLeg;
 data.timeWindows.DVsecondLeg2 = DVsecondLeg2;
 data.timeWindows.arrDays = arrArrVec/(24*3600);
-data.timeWindows.depDate = [YL MoL DL HL ML SL];
+data.timeWindows.depDate = [YLLL MoLLL DLLL HLLL MLLL SLLL];
 data.timeWindows.arrDate = [YLL MoLL DLL HLL MLL SLL];
 %%
 vec1 = '';
