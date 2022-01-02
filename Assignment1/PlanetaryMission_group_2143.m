@@ -64,7 +64,7 @@ settings.optimal.parallel = true;              % [-] True if parallel computing 
 
 %%% GROUNDTRACKS
 Tperiod = 2*pi * sqrt(data.starting.a^3/data.constants.muE);
-data.groundtracks.periods = [3.25*Tperiod, 24*60*60, 10*24*60*60];   % [s] Periods for which the groundtracks will be displayed
+data.groundtracks.periods = [Tperiod, 24*60*60, 10*24*60*60];   % [s] Periods for which the groundtracks will be displayed
 data.groundtracks.k = 2;                                             % [-] Number of periods of the Earth
 data.groundtracks.m = 5;                                             % [-] Number of periods of the satellite
 settings.groundtracks.plot = true;                                   % [-] True if plot are to be visulized
