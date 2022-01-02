@@ -110,10 +110,10 @@ data.groundtracks.decPer = decPer;
 data.groundtracks.lonPer = lonPer;
 data.groundtracks.latPer = latPer;
 %%% UNPERTURBED
-data.groundtracks.raUnpRep  = raUnpRep;
-data.groundtracks.decUnpRep = decUnpRep;
-data.groundtracks.lonUnpRep = lonUnpRep;
-data.groundtracks.latUnpRep = latUnpRep;
+data.groundtracks.raUnpRep  = raPerRep;
+data.groundtracks.decUnpRep = decPerRep;
+data.groundtracks.lonUnpRep = lonPerRep;
+data.groundtracks.latUnpRep = latPerRep;
 
 %% PLOT
 if settings.groundtracks.plot

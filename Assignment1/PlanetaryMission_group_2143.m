@@ -46,18 +46,18 @@ data.starting.date = [2021 12 20 12 0 0];      % [-]   Date time of the starting
 data.starting.a = 7.2776e4;                    % [km]  Orbit semi-major axis
 data.starting.e = 0.6665;                      % [-]   Orbit eccentricity
 data.starting.i = 134.2783;                    % [deg] Orbit inclinationdata.starting.a = 7.2776e4;                    
-data.starting.OM = 72;                         % [deg] Orbit RAAN
-data.starting.om = 45;                         % [deg] Orbit argument of pericenter
+data.starting.OM = 182.313;                         % [deg] Orbit RAAN
+data.starting.om = 120.667;                         % [deg] Orbit argument of pericenter
 data.starting.th = 0;                          % [deg] Orbit true anomaly
 
 %%% USED CONSTANTS
 data.constants.muE = astroConstants(13);       % [km^3/s^2] Planetary constant of the Earth
 
 %%% FIND OPTIMAL RAAN AND OM ..............................................
-data.optimal.nPeriod = 1;                      % [-] Number of periods the orbit is propagated for
-data.optimal.nPoints = 100;                    % [-] Number of points for each period at which coordinates are computed
-data.optimal.nOM = 50;                         % [-] Number of RAAN that are calculated to find the optimal value
-data.optimal.nom = 50;                         % [-] Number of omega that are calculated to find the optimal value
+data.optimal.nPeriod = 13;                      % [-] Number of periods the orbit is propagated for
+data.optimal.nPoints = 500;                    % [-] Number of points for each period at which coordinates are computed
+data.optimal.nOM = 100;                         % [-] Number of RAAN that are calculated to find the optimal value
+data.optimal.nom = 100;                         % [-] Number of omega that are calculated to find the optimal value
 settings.optimal.plot = true;                  % [-] True if plot are to be visulized
 settings.optimal.movie = true;                 % [-] True if movies are to be created
 settings.optimal.parallel = true;              % [-] True if parallel computing is allowed
@@ -72,19 +72,17 @@ settings.groundtracks.movie = true;                                  % [-] True 
 settings.groundtracks.parallel = true;                               % [-] True if parallel computing is allowed
 
 %%% PROPAGATION
-%data.propagation.TmaxComp = 40*Tperiod;               % [s] Final ode integration time for computational comparison
-%data.propagation.deltaSpan1 = 13000 : 1000 : 17000;    % [-] CPU settling number of N step vector
-%data.propagation.deltaSpan2 = 17000 : 5000 : 117000;   % [-] Computational comparison number of N step
-data.propagation.TmaxComp = Tperiod;               % [s] Final ode integration time for computational comparison
-data.propagation.deltaSpan1 = 13000;    % [-] CPU settling number of N step vector
-data.propagation.deltaSpan2 = 17000;   % [-] Computational comparison number of N step
-data.propagation.Tmax = Tperiod;              % [s] Final ode integration time for orbit propagation
+data.propagation.TmaxComp = 40*Tperiod;               % [s] Final ode integration time for computational comparison
+data.propagation.deltaSpan1 = 13000 : 1000 : 17000;   % [-] CPU settling number of N step vector
+data.propagation.deltaSpan2 = 17000 : 5000 : 117000;  % [-] Computational comparison number of N step
+data.propagation.Tmax = 10*365*24*3600;              % [s] Final ode integration time for orbit propagation
 settings.propagation.plot = true;                     % [-] True if propagation plot are to be visualized
 settings.propagation.movie = true;                    % [-] True if movies are to be created
 settings.propagation.parallel = true;                 % [-] True if parallel computing is allowed
+
 %%% REAL DATA COMPARISON
-data.realData.Tmax = 365*24*60*60;
-data.realData.nPoints = 365*100;
+data.realData.Tmax = 2*365*24*60*60;
+data.realData.nPoints = 365*200;
 
 
 %% **** FROM NOW ON, DO NOT CHANGE UNLESS YOU KNOW WHAT YOU ARE DOING *****
@@ -143,11 +141,11 @@ end
 
 
 %% GROUNDTRACKS
-data = GroundTrack(data, settings);
+%data = GroundTrack(data, settings);
 
 
 %% PROPAGATE PERTURBED ORBIT WITH CARTESIAN AND GAUSS EQUATIONS
-data = propagate(data, settings);
+%data = propagate(data, settings);
 
 %% REAL DATA
 load(strcat(pwd,'\functions\initialize\TLEs.mat'));

@@ -63,7 +63,7 @@ r_p_SolveFun = @(r_p) abs((delta_minus(r_p) + delta_plus(r_p))/2 - delta);
 r_p_min = R_planet + h_atm;
 
 options = optimoptions('fsolve','TolFun',1e-14,'Display','off');
-r_p = fsolve(r_p_SolveFun, r_p_min+1, options);  % Periapsis radius of the hyperbolas [km]
+r_p = fsolve(r_p_SolveFun, r_p_min, options);  % Periapsis radius of the hyperbolas [km]
 
 if r_p < r_p_min
     

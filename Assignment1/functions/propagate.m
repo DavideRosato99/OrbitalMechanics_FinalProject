@@ -13,7 +13,8 @@ end
 date0 = data.starting.date;
 deltaSpan1 = data.propagation.deltaSpan1;
 deltaSpan2 = data.propagation.deltaSpan2;
-Tmax = data.propagation.Tmax; 
+Tmax = data.propagation.Tmax;
+Tperiod = data.starting.Torbit;
 
 %% SPAN
 deltaSpan = [deltaSpan1, deltaSpan2];
@@ -53,15 +54,17 @@ end
 
 
 %% ORBIT PROPAGATION
+tspan = linspace(0, Tmax, 100 * floor(Tmax/Tperiod));
+size(tspan)
 %%% GAUSS
 options = odeset('RelTol', 1e-13, 'AbsTol', 1e-14);
-[TGauss, YGauss] = ode113(@ode_2bp, [0 Tmax], orbIn, options, mu, 'gauss', datetime(date0));
+[TGauss, YGauss] = ode113(@ode_2bp, tspan, orbIn, options, mu, 'gauss', datetime(date0));
 fprintf('ciao')
 perturbationsGauss = recallOdeFcn(@ode_2bp, TGauss, YGauss, mu, 'gauss', datetime(date0));
 fprintf('ciao')
 %%% CARTESIAN
 options = odeset('RelTol', 1e-13, 'AbsTol', 1e-14);
-[TCart, YCart] = ode113(@ode_2bp, [0 Tmax], x0, options, mu, 'cart', datetime(date0));
+[TCart, YCart] = ode113(@ode_2bp, tspan, x0, options, mu, 'cart', datetime(date0));
 perturbationsCart = recallOdeFcn(@ode_2bp, TCart, YCart, mu, 'cart', datetime(date0));
 
 %% PLOT
@@ -113,63 +116,99 @@ if settings.propagation.plot
     orbCart = zeros(size(YCart, 1), 6);
     for i = 1:size(YCart, 1)
         orbCart(i, :) = car2par(YCart(i, 1:3), YCart(i, 4:6), mu);
+        [YCartGauss(i, 1:3), ~] = par2car(YGauss(i, :), mu);
     end
+    
+    %%% SEMI-MAJOR AXIS ERROR
+    figure('Name', 'Semi-major axis error', 'NumberTitle', 'off');
+    plot(TCart/(365*24*3600), abs(orbCart(:, 1) - YGauss(:, 1))); grid on;
+    xlabel('Time [years]'); ylabel('$err_a$ [km]'); title('Semi-major axis error')
+    
+    %%% ECCENTRICITY ERROR
+    figure('Name', 'Eccentricity error', 'NumberTitle', 'off');
+    plot(TCart/(365*24*3600), abs(orbCart(:, 2) - YGauss(:, 2))); grid on;
+    xlabel('Time [years]'); ylabel('$err_e$ [-]'); title('Eccentricity error')
+    
+    %%% INCLINATION ERROR
+    figure('Name', 'Inclination error', 'NumberTitle', 'off');
+    plot(TCart/(365*24*3600), abs(orbCart(:, 3) - YGauss(:, 3))*180/pi); grid on;
+    xlabel('Time [years]'); ylabel('$err_i$ [deg]'); title('Inclination axis error')
+    
+    %%% RAAN ERROR
+    figure('Name', '$\Omega$ error', 'NumberTitle', 'off');
+    plot(TCart/(365*24*3600), abs(orbCart(:, 4) - YGauss(:, 4))*180/pi); grid on;
+    xlabel('Time [years]'); ylabel('$err_{\Omega}$ [deg]'); title('$\Omega$ error')
+    
+    %%% ARGUMENT OF PERICENTER ERROR
+    figure('Name', '$\omega$ error', 'NumberTitle', 'off');
+    plot(TCart/(365*24*3600), abs(orbCart(:, 5) - YGauss(:, 5))*180/pi); grid on;
+    xlabel('Time [years]'); ylabel('$err_{\omega}$ [km]'); title('$\omega$ error')
+    
+    %%% PERTURBATIONS ERROR
+    figure('Name', 'Perturbations error', 'NumberTitle', 'off');
+    plot(TCart/(365*24*3600), abs((vecnorm(perturbationsCart.aJ2+ perturbationsCart.aMOON))...
+        - (vecnorm(perturbationsGauss.aJ2+ perturbationsGauss.aMOON)))); grid on;
+    xlabel('Time [years]'); ylabel('$err_{acc}$ [$\frac{km}{s^2}$]'); title('$acc_{pert}$ error')
+%     
+%     %%% THETA ERROR
+%     figure('Name', 'True Anomaly error', 'NumberTitle', 'off');
+%     plot(TCart/(365*24*3600), abs(orbCart(:, 6) - YGauss(:, 6))*180/pi); grid on;
+%     xlabel('Time [years]'); ylabel('$err_{\theta}$ [km]'); title('$\tehta$ axis error')
     
     %%% SEMI-MAJOR AXIS
     figure('Name', 'Semi-major axis evolution', 'NumberTitle', 'off');
-    plot(TCart/(365*24*3600), orbCart(:, 1)); grid on; hold on;
-    plot(TGauss/(365*24*3600), YGauss(:, 1));
+    plot(TGauss/(365*24*3600), YGauss(:, 1)); hold on; grid on;
+    plot(TGauss/(365*24*3600), movmean(YGauss(:, 1), 5000), 'LineWidth',2);
     xlabel('Time [years]'); ylabel('a [km]'); title('Semi-major axis evolution')
-    legend('Cartesian', 'Gauss', 'interpreter', 'latex')
+    legend('Gauss', 'Filtered', 'interpreter', 'latex')
     
     %%% ECCENTRICITY
     figure('Name', 'Eccentricity evolution', 'NumberTitle', 'off');
-    plot(TCart/(365*24*3600), orbCart(:, 2)); grid on; hold on;
-    plot(TGauss/(365*24*3600), YGauss(:, 2));
+    plot(TGauss/(365*24*3600), YGauss(:, 2)); hold on; grid on;
+    plot(TGauss/(365*24*3600), movmean(YGauss(:, 2), 5000), 'LineWidth',2);
     xlabel('Time [years]'); ylabel('e [-]'); title('Eccentricity evolution')
-    legend('Cartesian', 'Gauss', 'interpreter', 'latex')
+    legend('Gauss', 'Filtered', 'interpreter', 'latex')
     
     %%% INCLINATION
     figure('Name', 'Inclination evolution', 'NumberTitle', 'off');
-    plot(TCart/(365*24*3600), rad2deg(orbCart(:, 3))); grid on; hold on;
-    plot(TGauss/(365*24*3600), rad2deg(YGauss(:, 3)));
+    plot(TGauss/(365*24*3600), YGauss(:, 3)*180/pi); hold on; grid on;
+    plot(TGauss/(365*24*3600), movmean(YGauss(:, 3)*180/pi, 5000), 'LineWidth',2);
     xlabel('Time [years]'); ylabel('i [deg]'); title('Inclination evolution')
-    legend('Cartesian', 'Gauss', 'interpreter', 'latex')
+    legend('Gauss', 'Filtered', 'interpreter', 'latex')
     
     %%% RAAN
     figure('Name', 'RAAN evolution', 'NumberTitle', 'off');
-    plot(TCart/(365*24*3600), rad2deg(orbCart(:, 4))); grid on; hold on;
-    plot(TGauss/(365*24*3600), rad2deg(YGauss(:, 4)));
+    plot(TGauss/(365*24*3600), YGauss(:, 4)*180/pi); hold on; grid on;
+    plot(TGauss/(365*24*3600), movmean(YGauss(:, 4)*180/pi, 5000), 'LineWidth',2);
     xlabel('Time [years]'); ylabel('$\Omega$ [deg]'); title('RAAN evolution')
-    legend('Cartesian', 'Gauss', 'interpreter', 'latex')
+    legend('Gauss', 'Filtered', 'interpreter', 'latex')
     
     %%% ARGUMENT OF PERICENTER
     figure('Name', 'Argument of pericenter evolution', 'NumberTitle', 'off');
-    plot(TCart/(365*24*3600), rad2deg(orbCart(:, 5))); grid on; hold on;
-    plot(TGauss/(365*24*3600), rad2deg(YGauss(:, 5)));
+    plot(TGauss/(365*24*3600), YGauss(:, 5)*180/pi); hold on; grid on;
+    plot(TGauss/(365*24*3600), movmean(YGauss(:, 5)*180/pi, 5000), 'LineWidth',2);
     xlabel('Time [years]'); ylabel('$\omega$ [deg]'); title('Argument of pericenter evolution')
-    legend('Cartesian', 'Gauss', 'interpreter', 'latex')
+    legend('Gauss', 'Filtered', 'interpreter', 'latex')
     
     %%% DISTANCE FROM EARTH
     figure('Name', 'Distance from Earth', 'NumberTitle', 'off');
-    plot(TCart/(365*24*3600), vecnorm(YCart')); grid on; hold on;
-    plot(TCart/(365*24*3600), movmean(vecnorm(YCart'), 10000));
-    xlabel('Time [years]'); ylabel('|r| [km]'); title('Distance from Earth')
-    legend('Cartesian', 'Gauss', 'interpreter', 'latex')
+    plot(TCart/(365*24*3600), vecnorm(YCartGauss')); grid on; hold on;
+    plot(TCart/(365*24*3600), movmean(vecnorm(YCartGauss'), 5000), 'LineWidth', 2);
+    xlabel('Time [years]'); ylabel('$|r|$ [km]'); title('Distance from Earth')
+    legend('Gauss', 'Filtered', 'interpreter', 'latex')
     
     %%% J2 PERTURBATION
     figure('Name', 'J2 perturbation', 'NumberTitle', 'off');
-    plot(TCart/(365*24*3600), vecnorm(perturbationsCart.aJ2)); grid on; hold on;
-    plot(TGauss/(365*24*3600), vecnorm(perturbationsGauss.aJ2));
-    plot(TCart/(365*24*3600), movmean(vecnorm(perturbationsCart.aJ2), 10000));
-    xlabel('Time [years]'); ylabel('a$_{J2}$ [$frac{km}{s^2}$]'); title('J2 acceleration')
-    legend('Cartesian', 'Gauss', 'interpreter', 'latex')
+    plot(TCart/(365*24*3600), vecnorm(perturbationsGauss.aJ2)); grid on; hold on;
+    plot(TGauss/(365*24*3600), movmean(vecnorm(perturbationsGauss.aJ2), 5000), 'LineWidth', 2);
+    xlabel('Time [years]'); ylabel('a$_{J2}$ [$\frac{km}{s^2}$]'); title('J2 acceleration')
+    legend('Gauss', 'Filtered', 'interpreter', 'latex')
     
     %%% MOON PERTURBATION
     figure('Name', 'Moon Perturbation', 'NumberTitle', 'off');
-    plot(TCart/(365*24*3600), vecnorm(perturbationsCart.aMOON)); grid on; hold on;
-    plot(TGauss/(365*24*3600), vecnorm(perturbationsGauss.aMOON));
-    xlabel('Time [years]'); ylabel('a$_{Moon}$ [$frac{km}{s^2}$]'); title('Moon acceleration')
-    legend('Cartesian', 'Gauss', 'interpreter', 'latex')
+    plot(TCart/(365*24*3600), vecnorm(perturbationsGauss.aMOON)); grid on; hold on;
+    plot(TGauss/(365*24*3600), movmean(vecnorm(perturbationsGauss.aMOON), 5000), 'LineWidth', 2);
+    xlabel('Time [years]'); ylabel('a$_{Moon}$ [$\frac{km}{s^2}$]'); title('Moon acceleration')
+    legend('Gauss', 'Filtered', 'interpreter', 'latex')
     
 end

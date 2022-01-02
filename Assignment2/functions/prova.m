@@ -34,14 +34,14 @@ periodFlyByPlanet = 2*pi * sqrt(kepFlyBy(1)^3 / ksun);
 periodArrPlanet   = 2*pi * sqrt(kepArr(1)^3 / ksun);
 
 % Synodic period
-synPeriod1 = (periodFlyByPlanet * periodDepPlanet)/(abs(periodFlyByPlanet - periodDepPlanet))
-synPeriod2 = (periodArrPlanet * periodFlyByPlanet)/(abs(periodArrPlanet - periodFlyByPlanet))
+synPeriod1 = (periodFlyByPlanet * periodDepPlanet)/(abs(periodFlyByPlanet - periodDepPlanet));
+synPeriod2 = (periodArrPlanet * periodFlyByPlanet)/(abs(periodArrPlanet - periodFlyByPlanet));
 
 %% TOF VECTORS
 arrFlyByVec = linspace(0, TOTdays*24*3600, nTOF1);
 arrArrVec   = linspace(0, TOTdays*24*3600, nTOF2);
 
-%% CALCULATION
+%% LARGE GRID-SEARCH CALCULATIONS
 DVfirstLeg = nan(nDep, nTOF1);
 DVsecondLeg = nan(nDep, nTOF1, nTOF2);
 DVsecondLeg2 = nan(nTOF1, nTOF2);
@@ -141,22 +141,23 @@ parfor i = 1:nDep
     
 end
 
-%%
+
+%% OBTAIN MINIMA FOR SECOND LEG
 for j = 1:nTOF1
     for k = 1:nTOF2
+        
         DV = DVsecondLeg(:, j, k);
-        
         minDV = min(DV);
-        
         DVsecondLeg2(j, k) = minDV;
         
     end
 end
 
+
 %%
-minDV = zeros(floor(TOTdays*24*3600/synPeriod2)+1, 1);
+minDV     = zeros(floor(TOTdays*24*3600/synPeriod2)+1, 1);
 minDVdays = zeros(floor(TOTdays*24*3600/synPeriod2)+1, 1);
-minima = min(DVsecondLeg2, [], 2);
+minima    = min(DVsecondLeg2, [], 2);
 
 for i = 1:floor(TOTdays*24*3600/synPeriod2)+1
     indexes = find(arrFlyByVec >= (i-1)*synPeriod2 + 1 & arrFlyByVec < i*synPeriod2);

@@ -111,38 +111,39 @@ options = odeset('RelTol', 1e-13, 'AbsTol', 1e-14);
 
     %%% SEMI-MAJOR AXIS
     figure('Name', 'Semi-major axis evolution', 'NumberTitle', 'off');
-    plot(timespan, orb(:, 1)); grid on; hold on;
-    plot(timespan, YGauss(:, 1));
+    plot(timespan/(365*24*3600), orb(:, 1), 'LineWidth', 1); grid on; hold on;
+    plot(timespan/(365*24*3600), YGauss(:, 1), 'LineWidth', 1);
     xlabel('Time [years]'); ylabel('a [km]'); title('Semi-major axis evolution')
     legend('Real Data', 'Gauss', 'interpreter', 'latex')
     
     %%% ECCENTRICITY
     figure('Name', 'Eccentricity evolution', 'NumberTitle', 'off');
-    plot(timespan, orb(:, 2)); grid on; hold on;
-    plot(timespan, YGauss(:, 2));
+    plot(timespan/(365*24*3600), orb(:, 2), 'LineWidth', 1); grid on; hold on;
+    plot(timespan/(365*24*3600), YGauss(:, 2), 'LineWidth', 1);
     xlabel('Time [years]'); ylabel('e [-]'); title('Eccentricity evolution')
     legend('Real Data', 'Gauss', 'interpreter', 'latex')
     
     %%% INCLINATION
     figure('Name', 'Inclination evolution', 'NumberTitle', 'off');
-    plot(timespan, rad2deg(orb(:, 3))); grid on; hold on;
-    plot(timespan, rad2deg(YGauss(:, 3)));
+    plot(timespan/(365*24*3600), rad2deg(orb(:, 3)), 'LineWidth', 1); grid on; hold on;
+    plot(timespan/(365*24*3600), rad2deg(YGauss(:, 3)), 'LineWidth', 1);
     xlabel('Time [years]'); ylabel('i [deg]'); title('Inclination evolution')
     legend('Real Data', 'Gauss', 'interpreter', 'latex')
     
     %%% RAAN
     figure('Name', 'RAAN evolution', 'NumberTitle', 'off');
-    plot(timespan, rad2deg(orb(:, 4))); grid on; hold on;
-    plot(timespan, rad2deg(YGauss(:, 4)));
+    plot(timespan/(365*24*3600), rad2deg(orb(:, 4)), 'LineWidth', 1); grid on; hold on;
+    plot(timespan/(365*24*3600), rad2deg(YGauss(:, 4)), 'LineWidth', 1);
     xlabel('Time [years]'); ylabel('$\Omega$ [deg]'); title('RAAN evolution')
     legend('Real Data', 'Gauss', 'interpreter', 'latex')
     
     %%% ARGUMENT OF PERICENTER
     figure('Name', 'Argument of pericenter evolution', 'NumberTitle', 'off');
-    plot(timespan, rad2deg(orb(:, 5))); grid on; hold on;
-    plot(timespan, rad2deg(YGauss(:, 5)));
+    plot(timespan/(365*24*3600), rad2deg(orb(:, 5)), 'LineWidth', 1); grid on; hold on;
+    plot(timespan/(365*24*3600), rad2deg(YGauss(:, 5)), 'LineWidth', 1);
     xlabel('Time [years]'); ylabel('$\omega$ [deg]'); title('Argument of pericenter evolution')
     legend('Real Data', 'Gauss', 'interpreter', 'latex')
+
 
 
 

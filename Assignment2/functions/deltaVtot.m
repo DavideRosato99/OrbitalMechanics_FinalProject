@@ -13,12 +13,12 @@ function [a1, p1, e1, error1, vi1, vf1, Tpar1, theta1, a2, p2, e2, ...
 %   minHfl,ID1,ID2,ID3)
 %
 % INPUT:
-%   rr1        double [3x1]   Departure planet position    [km]
-%   rr2        double [3x1]   Fly-By planet position       [km]
-%   rr3        double [3x1]   Arrival planet position      [km]
-%   vv1        double [3x1]   Departure planet velocity    [km/s]
-%   vv2        double [3x1]   Fly-By planet velocity       [km/s]
-%   vv3        double [3x1]   Arrival planet velocity      [km/s]
+%   rr1             double [3x1]     Departure planet position       [km]
+%   rr2             double [3x1]     Fly-By planet position          [km]
+%   rr3             double [3x1]     Arrival planet position         [km]
+%   vv1             double [3x1]     Departure planet velocity       [km/s]
+%   vv2             double [3x1]     Fly-By planet velocity          [km/s]
+%   vv3             double [3x1]     Arrival planet velocity         [km/s]
 %
 % OUTPUT:
 %   errorFB          double  [1x1]   error in computing the radius of
@@ -46,16 +46,16 @@ function [a1, p1, e1, error1, vi1, vf1, Tpar1, theta1, a2, p2, e2, ...
 ksun = astroConstants(4);
 
 %% DEPARTURE
-[a1, p1, e1, error1, vi1, vf1, Tpar1, theta1] = lambertMR(rr1, rr2, TOF1, ksun, 0, 0, 0, 1);
+[a1, p1, e1, error1, vi1, vf1, Tpar1, theta1] = lambertMR(rr1, rr2, TOF1, ksun, 0, 0, 0, 0);
 DV1 = norm(vi1' - vv1);
 
 %% ARRIVAL
-[a2, p2, e2, error2, vi2, vf2, Tpar2, theta2] = lambertMR(rr2, rr3, TOF2, ksun, 0, 0, 0, 1);
+[a2, p2, e2, error2, vi2, vf2, Tpar2, theta2] = lambertMR(rr2, rr3, TOF2, ksun, 0, 0, 0, 0);
 DV2 = norm(vf2' - vv3);
 
 %% FLY-BY
 [errorFB, r_p, h_ga, delta, delta_V_powFB, e_minus, e_plus, a_minus,...
-    a_plus] = poweredFlyby(vi1, vf2, vv2, minHfl, ID);
+    a_plus] = poweredFlyby(vf1, vi2, vv2', minHfl, ID);
 
 
 

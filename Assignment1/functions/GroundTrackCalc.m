@@ -102,6 +102,9 @@ for i = 1:N
 
             Trep = 2*pi/(n(aRep) + M_punto(aRep) + om_punto(aRep))*k;
             t_vec = 0 : deltaT : Trep;
+            
+            [rr0, vv0] = par2car(orbIn, mu);
+            Y0 = [rr0; vv0];
         end
         
     end
