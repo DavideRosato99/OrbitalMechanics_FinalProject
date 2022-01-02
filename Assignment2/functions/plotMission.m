@@ -197,76 +197,96 @@ arrp = surf(X3 + rr3(1),Y3 + rr3(2),Z3 + rr3(3),'FaceColor', 'none', 'EdgeColor'
 set(arrp, 'FaceColor', 'texturemap', 'CData', cdataV);
 
 %% flyby 
-figure; 
-r = astroConstants(20+flyByPlanID);
-[X,Y,Z] = sphere(100);
-X = r*X ;
-Y = r*Y ;
-Z = r*Z ;
-fbp = surf(X ,Y ,Z ,'FaceColor', 'none', 'EdgeColor', 'none');
-set(fbp, 'FaceColor', 'texturemap', 'CData', cdataE);
-hold on
-axis equal
-rsoi = astroConstants(2)*(muE/muS)^(2/5);
+vInfMin = vf1;
+vInfPlus = vi2;
+vMin = norm(vInfMin); 
+vPlus = norm(vInfPlus);
 
-% [X,Y,Z] = sphere(100);
-% X = rsoi*X ;
-% Y = rsoi*Y ;
-% Z = rsoi*Z ;
-% fbp = surf(X ,Y ,Z,'FaceColor', [0.1 0.1 0.1], 'EdgeColor', 'none','FaceAlpha',0.2);
+delta = acos(dot(vInfMin,vInfPlus)/(vMin*vPlus));
 
-if firstlegin(6) < firstlegend(6)
-    thspan = linspace(firstlegin(6),firstlegend(6),1000);
+% extract attractor mass parameter and radius
+mu = astroConstants(10+flyByPlanID);
+rP = astroConstants(20+flyByPlanID);
+
+% valuate epericentre height
+rp = rP + minHfl;
+
+% evaluate both branches eccentricities, semimajor axes
+eMin = 1 + rp*vMin^2/mu;
+ePlus = 1 + rp*vPlus^2/mu; 
+aMin = -mu/vMin^2; 
+aPlus = -mu/vPlus^2;
+
+% evaluate hyperbolic plane directions
+planeDir = cross(vInfMin, vInfPlus)/(vMin*vPlus*sin(delta));
+% norm(planeDir)
+% dot(planeDir, vInfMin)
+% dot(planeDir, vInfPlus)
+
+% evaluate plane parameters of the hyperbolic trajectory
+i = acos(planeDir(3));
+N = cross([0 0 1], planeDir)/norm(cross([0 0 1], planeDir));
+if ~isequal(N, [0 0 0])
+    if N(2) >= 0
+        Om = acos(N(1));
+    else
+        Om = 2*pi - acos(N(1));
+    end
 else
-    thspan = linspace(firstlegin(6),firstlegend(6)+2*pi,1000);
+    Om = 0;
 end
 
-tspan = linspace(0,TOF1,1000);
-orb = firstlegin;
-for i = 1:length(thspan)
-    date = depDate + tspan(i)/(24*3600);
-    [flybykep,~] = uplanet(date, flyByPlanID);
-    [rrE, ~] = par2car(flybykep, muS);
+% evaluate impact parameters
+DELTAMin = rp*sqrt(1 + 2*mu /(rp*vMin^2));
+DELTAPlus = rp*sqrt(1 + 2*mu /(rp*vPlus^2));
+
+% evaluate two branches specific angular momentums
+hMin = DELTAMin*vMin; 
+hPlus = DELTAPlus*vPlus; 
+hMin = hMin*planeDir;
+hPlus = hPlus*planeDir; 
+
+% as vInfMin is the velocity at infinity direction, it coincides with radial direction at infinite
+rHatInfMin = -vInfMin/norm(vMin);
+rHatInfPlus = vInfPlus/norm(vPlus);
+
+% eccentricity vectors evaluations
+eMinVect = cross(vInfMin, hMin)/mu - rHatInfMin; 
+ePlusVect = cross(vInfPlus, hPlus)/mu - rHatInfPlus; 
+
+% pericentre anomaly evaluation
+if eMinVect(3) >= 0
+    om = acos(dot(N, eMinVect)/norm(eMin)); 
+else
+    om = 2*pi - acos(dot(N, eMinVect)/norm(eMin));
+end
+
+% infinite true anomalies evaluation
+thetaInfMin = acos(-1/eMin); 
+thetaInfPlus = acos(-1/ePlus); 
+
+thvec1 = linspace(-thetaInfMin+0.5,0,1000);
+thvec2 = linspace(0,thetaInfPlus-0.5,1000);
+
+for ii = 1:1000
     
-    orb(6) = thspan(i);
-    [rr_firstleg1(:,i),~] = par2car(orb,muS); 
-    rr_firstleg(:,i) = rr_firstleg1(:,i) - rrE; 
- 
-end
-[~,index] = min(abs(vecnorm(rr_firstleg) - rsoi))
-
-% plot3(rr_firstleg(1,index-10:index),rr_firstleg(2,index-10:index),rr_firstleg(3,index-10:index));
-
-
-[kepminus] = car2par(rr_firstleg(:,index),vf1',muE);
-OM = kepminus(4);
-om = kepminus(5);
-ii  = kepminus(3);
-R_OM = [cos(OM) sin(OM) 0; -sin(OM) cos(OM) 0; 0 0 1];
-R_i =  [1 0 0; 0 cos(ii) sin(ii); 0 -sin(ii) cos(ii)];
-R_om = [cos(om) sin(om) 0; -sin(om) cos(om) 0; 0 0 1];
-
-T_ECI_PF = R_om*R_i*R_OM;
-T_PF_ECI = T_ECI_PF';
-
-rr=zeros(3,300);
-thspan1 = [linspace(deg2rad(270),2*pi,300)];%,linspace(deg2rad(0),deg2rad(90),300)]
-for i = 1:length(thspan1)
-    r(i) = (a_minus*(1-e_minus^2))/(1+e_minus*cos(thspan1(i)));
-    r_PF = r(i)*[cos(thspan1(i)); sin(thspan1(i)); 0];
-    rr(:,i) = T_PF_ECI*r_PF;
+    orb1 = [aMin, eMin, i, Om, om, thvec1(ii)];
+    [rr1(:,ii),~] = par2car(orb1,muE);     
+    orb2 = [aPlus, ePlus, i, Om, om, thvec2(ii)];
+    [rr2(:,ii),~] = par2car(orb2,muE);
+    
 end
 
-plot3(rr(1,:),rr(3,:),rr(3,:),'LineWidth',1.5);
 figure
-plot(rad2deg(thspan1),r)
-
-manna = 7;
-
-
-
-
-
+[X2,Y2,Z2] = sphere(100);
+X2 = r2*X2 ;
+Y2 = r2*Y2 ;
+Z2 = r2*Z2 ;
+fbp = surf(X2 ,Y2 ,Z2 ,'FaceColor', 'none', 'EdgeColor', 'none');
+set(fbp, 'FaceColor', 'texturemap', 'CData', cdataE);
+hold on; axis equal; grid on; 
+plot3(rr1(1,:),rr1(2,:),rr1(3,:));
+plot3(rr2(1,:),rr2(2,:),rr2(3,:));
 
 
 
