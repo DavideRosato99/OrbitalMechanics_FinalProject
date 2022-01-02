@@ -24,10 +24,29 @@ UB(3) = TOF2max*24*60;
 
 fitnessFcn = @(x) fitness(x, A, B, minHfl, minDatemjd2000, depPlanID, flyByPlanID, arrPlanID);
 options = optimoptions('particleswarm', 'MaxStallIterations', 50, 'FunctionTolerance', ...
-    1e-6, 'MaxIterations', 200, ...
-    'SwarmSize', 5000,  'PlotFcn', 'pswplotbestf', ...
-    'Display', 'iter',  'UseParallel', true);
+    1e-6, 'MaxIterations', 200, 'SwarmSize', 25000,  'PlotFcn', 'pswplotbestf', ...
+    'Display', 'iter',  'UseParallel', true, 'FunctionTolerance', 1e-4);
+tic
 [xOpt, DVopt, exitflag] = particleswarm(fitnessFcn, 3, LB, UB, options);
+compTime = toc;
+
+date = minDate;
+date(6) = date(6) + xOpt(1)*60;
+[Y, Mo, D] = ymd(datetime(date));
+[H, M, S] = hms(datetime(date));
+fprintf(strcat("Optimal Departure Date:  ", datestr([Y Mo D H M S]), "\n"))
+
+date = minDate;
+date(6) = date(6) + xOpt(1)*60 + xOpt(2)*60;
+[Y, Mo, D] = ymd(datetime(date));
+[H, M, S] = hms(datetime(date));
+fprintf(strcat("Optimal Fly-By Date:  ", datestr([Y Mo D H M S]), "\n"))
+
+date = minDate;
+date(6) = date(6) + xOpt(1)*60 + xOpt(2)*60 + xOpt(3)*60;
+[Y, Mo, D] = ymd(datetime(date));
+[H, M, S] = hms(datetime(date));
+fprintf(strcat("Optimal Arrival Date:  ", datestr([Y Mo D H M S]), "\n"))
 
 end
 

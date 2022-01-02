@@ -154,6 +154,24 @@ end
 
 comptTime = toc(t);
 
+date = minDate;
+date(6) = date(6) + vec1(bestGlobalI)*24*3600;
+[Y, Mo, D] = ymd(datetime(date));
+[H, M, S] = hms(datetime(date));
+fprintf(strcat("Optimal Departure Date:  ", datestr([Y Mo D H M S]), "\n"))
+
+date = minDate;
+date(6) = date(6) + vec1(bestGlobalI)*24*3600 + vec2(bestGlobalJ)*24*3600;
+[Y, Mo, D] = ymd(datetime(date));
+[H, M, S] = hms(datetime(date));
+fprintf(strcat("Optimal Fly-By Date:  ", datestr([Y Mo D H M S]), "\n"))
+
+date = minDate;
+date(6) = date(6) + vec1(bestGlobalI)*24*3600 + vec2(bestGlobalJ)*24*3600 + vec3(bestGlobalK)*24*3600;
+[Y, Mo, D] = ymd(datetime(date));
+[H, M, S] = hms(datetime(date));
+fprintf(strcat("Optimal Arrival Date:  ", datestr([Y Mo D H M S]), "\n"))
+
 %% PLOT
 if settings.gridSearch.plot
     %%%
@@ -227,8 +245,6 @@ if settings.gridSearch.plot
     
     %%%
     figure
-    un = plot3(1,1,1); hold on;
-    flag1 = false;
     for i = 1:ctr-1
         minMin = min(min(min(DVTOTglobal{i})));
         x = linspace(departureStartGlobal{i}, departureEndGlobal{i}, nDep);
@@ -239,18 +255,26 @@ if settings.gridSearch.plot
                 for kk = 1:length(z)
                     if not(isnan(DVTOTglobal{i}(ii, jj, kk)))
                         if DVTOTglobal{i}(ii, jj, kk) == minMin
-                            plot3(x(ii), y(jj), z(kk), 'o', 'color', 'r',...
-                                'MarkerFaceColor', 'r', ...
-                                'MarkerSize', 6);
-                            if flag1 == false
-                                delete(un);
-                                flag1 = true;
-                            end
+                            minMinima{i}= [x(ii), y(jj), z(kk)];
                         end
                     end
                 end
             end
         end
+    end
+    colormap = parula(ctr-1);
+    plot3(minMinima{1}(1), minMinima{1}(2), minMinima{1}(3), 'o', 'color', colormap(1, :),...
+        'MarkerFaceColor', colormap(1, :), ...
+        'MarkerSize', 6); hold on; grid on;
+    for i = 2:ctr-1
+        plot3(minMinima{i}(1), minMinima{i}(2), minMinima{i}(3), 'o', 'color', colormap(i, :),...
+            'MarkerFaceColor', colormap(i, :), ...
+            'MarkerSize', 6);
+        U = minMinima{i}(1) - minMinima{i-1}(1);
+        V = minMinima{i}(2) - minMinima{i-1}(2);
+        W = minMinima{i}(3) - minMinima{i-1}(3);
+        quiver3(minMinima{i-1}(1), minMinima{i-1}(2), minMinima{i-1}(3), ...
+            U, V, W, 'k');
     end
     xlabel('Time from first date [days]');
     ylabel('TOF 1 [days]');
@@ -277,17 +301,15 @@ if settings.gridSearch.plot
         stdDevDown(i) = sqrt(sum(diff(diff < 0).^2) / length(diff(diff < 0)));
     end
     
-    errorbar([1 : ctr-1], meanVal, stdDevDown, stdDevUp); hold on;
-    plot([1 : ctr-1], minVal, '-o'); grid on;
+    subplot(2,1,1)
+    plot([1 : ctr-1], minVal, '-o', 'LineWidth', 1); grid on;
+    ylabel('$\Delta$V [$\frac{km}{s}$]'); title('Output - Grid Search')
+    subplot(2,1,2)
+    errorbar([1 : ctr-1], meanVal, stdDevDown, stdDevUp, 'LineWidth', 1); grid on;
     xlim([0.5 ctr-0.5]);
     legend('Mean and std Dev.', 'Best individual');
     xlabel('Generation [-]'); ylabel('$\Delta$V [$\frac{km}{s}$]')
     
-    
-    %%%
-    figure
-    plot([1 : length(compTime(1:end-1))], compTime(1:end-1), '-o'); grid on
-    xlabel('Generation [-]'); ylabel('Computational Time [s]')
     
 end
 

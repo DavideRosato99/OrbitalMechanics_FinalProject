@@ -39,11 +39,11 @@ addpath(genpath('functions'))
 
 %% **************************** USER HERE *********************************
 %%% STARTING DATA
-data.starting.depDate     = [2027 12 1 0 0 0];      % [Y M D H m S] Minimum departure date
-data.starting.arrDate     = [2067 12 1 0 0 0];      % [Y M D H m S] Maximum arrival date
-data.starting.depPlanID   = 4;                      % [-] Departure planet ID (Mars)
-data.starting.flyByPlanID = 3;                      % [-] Fly-by planet ID (Earth)
-data.starting.arrPlanID   = 2;                      % [-] Arrival planet ID (Venus)
+data.starting.depDate     = [2027 6 1 0 0 0];      % [Y M D H m S] Minimum departure date
+data.starting.arrDate     = [2067 6 1 0 0 0];      % [Y M D H m S] Maximum arrival date
+data.starting.depPlanID   = 1;                      % [-] Departure planet ID (Mars)
+data.starting.flyByPlanID = 2;                      % [-] Fly-by planet ID (Earth)
+data.starting.arrPlanID   = 5;                      % [-] Arrival planet ID (Venus)
 
 %%% USED CONSTANTS
 data.constants.muE = astroConstants(13);       % [km^3/s^2] Planetary constant of the Earth
@@ -62,38 +62,44 @@ settings.timeWindows.parallel = true;     % [-] True if parallel computing is al
 data.optimization.minHfl = 200;
 
 %%% GRID SEARCH
-data.gridSearch.nDep = 50;
-data.gridSearch.nTOF1 = 50;
-data.gridSearch.nTOF2 = 50;
+data.gridSearch.nDep  = 100;
+data.gridSearch.nTOF1 = 100;
+data.gridSearch.nTOF2 = 100;
 settings.gridSearch.plot = true;
 settings.gridSearch.parallel = true;
 
 %% SELECTING TIME WINDOWS
-% data = timeWindows(data, settings);
+data = timeWindows(data, settings);
 
-%% GRID SEARCH
-data.timeWindows.depDate = [2039,7,8,7,42,58.9566981201172];
-data.timeWindows.arrDate = [2055,7,29,22,53,46.4537894287109];
-data.timeWindows.maxTOF1days = 2811.66781454150;
-data.timeWindows.maxTOF2days = 3053.96467963780;
-data = gridSearch(data, settings);
-
-
-%% GRID SEARCH + FMINCON
-% data.timeWindows.depDate = [2044,2,27,8,21,56.3843509521484];
-% data.timeWindows.arrDate = [2055,6,18,14,24,49.3654221191406];
-% [data] = gridSearch_fmincon(data, settings);
-
-%% GA
-% data.timeWindows.depDate = [2027 12 1 0 0 0];
-% data.timeWindows.arrDate = [2067 12 1 0 0 0];
-% [data] = optimizationGA(data, settings);
+%% GRID SEARCH OPTIMIZATION
+% data.timeWindows.depDate = [2039,7,8,7,42,58.9566981201172];
+% data.timeWindows.arrDate = [2055,7,29,22,53,46.4537894287109];
+% data.timeWindows.maxTOF1days = 2811.66781454150;
+% data.timeWindows.maxTOF2days = 3053.96467963780;
+% data = gridSearch(data, settings);
 
 
+% %% PARTICLE SWARM OPTIMIZATION
+% data.timeWindows.depDate = [2039,7,8,7,42,58.9566981201172];
+% data.timeWindows.arrDate = [2055,7,29,22,53,46.4537894287109];
+% data.timeWindows.maxTOF1days = 2811.66781454150;
+% data.timeWindows.maxTOF2days = 3053.96467963780;
+% [data] = optimizationPS(data, settings);
+
+% %% GA OPTIMIZATION
+% data.timeWindows.depDate = [2039,7,8,7,42,58.9566981201172];
+% data.timeWindows.arrDate = [2055,7,29,22,53,46.4537894287109];
+% data.timeWindows.maxTOF1days = 2811.66781454150;
+% data.timeWindows.maxTOF2days = 3053.96467963780;
+[data] = optimizationGA(data, settings);
 
 
+data.final.depDate = [2041, 8, 1, 3, 22, 17];
+data.final.flybyDate = [2042, 6, 9, 10, 40, 51];
+data.final.arrDate = [2042, 12, 6, 6, 59, 50];
 
 
+plotMission(data)
 
 
 

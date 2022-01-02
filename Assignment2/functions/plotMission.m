@@ -31,12 +31,12 @@ function [] = plotMission(data)
 % -------------------------------------------------------------------------
 
 % depDate      = data.starting.depDate;
-depDate      = [2041 08 01 01 08 00];
+depDate      = [2041, 8, 1, 3, 22, 17];
 depDate      = date2mjd2000(depDate);
-FlyByDate    = [2042 06 09 12 41 21];% data.starting.depDate;
+FlyByDate    = [2042, 6, 9, 10, 40, 51];% data.starting.depDate;
 FlyByDate    = date2mjd2000(FlyByDate);
 % arrDate      = data.starting.arrDate;
-arrDate      = [2042 12 06 05 19 24];
+arrDate      = [2042, 12, 6, 6, 59, 50];
 arrDate      = date2mjd2000(arrDate);
 
 minHfl = data.optimization.minHfl;
@@ -73,10 +73,6 @@ for i = 1:300
    [arrkep,~] = uplanet(arrDate + tspanA(i)/(24*3600), arrPlanID);
    [rrDarr(:,i), vvDarr(:,i)] = par2car(arrkep, muS);
 end
-plot3(rrDin(1,:),rrDin(2,:),rrDin(3,:),'--k');
-axis equal; grid on; hold on;
-plot3(rrDfb(1,:),rrDfb(2,:),rrDfb(3,:),'--k');
-plot3(rrDarr(1,:),rrDarr(2,:),rrDarr(3,:),'--k');
 
 %% orbit planet
 % % figure
@@ -114,9 +110,9 @@ TOF2 = (arrDate -FlyByDate)*24*3600;
     rr1, rr2, rr3, vv1, vv2, vv3, TOF1, TOF2, minHfl, flyByPlanID);
 
 %% first leg
-firstlegin = car2par(rr1,vi1',muS)
+firstlegin = car2par(rr1,vi1',muS);
 
-firstlegend= car2par(rr2,vf1',muS)
+firstlegend= car2par(rr2,vf1',muS);
 if firstlegin(6) < firstlegend(6)
     thspan = linspace(firstlegin(6),firstlegend(6),300);
 else
@@ -131,15 +127,15 @@ for i = 1:length(thspan)
      
 end
 
-plot3(rr_firstleg(1,:),rr_firstleg(2,:),rr_firstleg(3,:));
+plot3(rr_firstleg(1,:),rr_firstleg(2,:),rr_firstleg(3,:)); hold on
 
 
 
 %% second leg
 
-secondlegin = car2par(rr2,vi2',muS)
+secondlegin = car2par(rr2,vi2',muS);
 
-secondlegend= car2par(rr3,vf2',muS)
+secondlegend= car2par(rr3,vf2',muS);
 if secondlegin(6) <secondlegend(6)
     thspan = linspace(secondlegin(6),secondlegend(6),300);
 else
@@ -155,6 +151,13 @@ for i = 1:length(thspan)
 end
 
 plot3(rr_secondleg(1,:),rr_secondleg(2,:),rr_secondleg(3,:));
+
+%%
+plot3(rrDin(1,:),rrDin(2,:),rrDin(3,:),'--k');
+axis equal; grid on; hold on;
+plot3(rrDfb(1,:),rrDfb(2,:),rrDfb(3,:),'--k');
+plot3(rrDarr(1,:),rrDarr(2,:),rrDarr(3,:),'--k');
+legend('First Leg', 'Second Leg')
 
 %%
 % load('planet_texture');
@@ -265,10 +268,10 @@ end
 thetaInfMin = acos(-1/eMin); 
 thetaInfPlus = acos(-1/ePlus); 
 
-thvec1 = linspace(-thetaInfMin+0.5,0,1000);
-thvec2 = linspace(0,thetaInfPlus-0.5,1000);
+thvec1 = linspace(-thetaInfMin+0.4,0,10000);
+thvec2 = linspace(0,thetaInfPlus-0.4,10000);
 
-for ii = 1:1000
+for ii = 1:10000
     
     orb1 = [aMin, eMin, i, Om, om, thvec1(ii)];
     [rr1(:,ii),~] = par2car(orb1,muE);     
@@ -277,21 +280,47 @@ for ii = 1:1000
     
 end
 
+Rsoi = astroConstants(2) * (muE/muS)^(2/5)
+
 figure
+plot3(rr1(1,:),rr1(2,:),rr1(3,:), 'LineWidth', 1.5); hold on;
+plot3(rr2(1,:),rr2(2,:),rr2(3,:), 'LineWidth', 1.5);
+
+[flybykep,~] = uplanet(FlyByDate, flyByPlanID);
+[rr6, vv6] = par2car(flybykep, muS);
+quiver3(0, 0, 0, -rr6(1)/10000, -rr6(2)/10000, -rr6(3)/10000+6500);
+
 [X2,Y2,Z2] = sphere(100);
 X2 = r2*X2 ;
 Y2 = r2*Y2 ;
 Z2 = r2*Z2 ;
 fbp = surf(X2 ,Y2 ,Z2 ,'FaceColor', 'none', 'EdgeColor', 'none');
 set(fbp, 'FaceColor', 'texturemap', 'CData', cdataE);
-hold on; axis equal; grid on; 
-plot3(rr1(1,:),rr1(2,:),rr1(3,:));
-plot3(rr2(1,:),rr2(2,:),rr2(3,:));
+hold on; axis equal; grid on;
+
+% [X2,Y2,Z2] = sphere(100);
+% X2 = Rsoi*X2 ;
+% Y2 = Rsoi*Y2 ;
+% Z2 = Rsoi*Z2 ;
+% surf(X2 ,Y2 ,Z2 ,'FaceColor', [.1, .1, .1], 'EdgeColor', 'none', 'FaceAlpha', 0.2)
+
+
+F = @(th, e) 2*atanh(sqrt((e-1)/(e+1)) * tan(th/2));
+dt = @(th1, th2, e, a) sqrt(muE/(-a^3)) * ( (e*sinh(F(th2, e)) - F(th2, e)) - (e*sinh(F(th1, e)) - F(th1, e)) );
+
+[a, index1] = min(abs(vecnorm(rr1) - Rsoi))
+[a, index2] = min(abs(vecnorm(rr2) - Rsoi))
+
+% plot3(rr1(1, index1),rr1(2, index1),rr1(3, index1), '*')
+
+thvec1(index1)
+
+dt(0, 2*pi - thvec1(index1), eMin, aMin)
+dt(0, thvec2(index2), ePlus, aPlus)
 
 
 
-
-
+csad = 1;
 
 
 

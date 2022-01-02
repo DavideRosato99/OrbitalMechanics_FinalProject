@@ -24,12 +24,37 @@ UB(3) = TOF2max*24*60;
 
 fitnessFcn = @(x) fitness(x, A, B, minHfl, minDatemjd2000, depPlanID, flyByPlanID, arrPlanID);
 
+t = tic
 options = optimoptions('ga', 'MaxStallGenerations', 50, 'FunctionTolerance', ...
-    1e-6, 'MaxGenerations', 10, 'NonlinearConstraintAlgorithm', 'penalty',...
-    'PopulationSize', 5000, 'PlotFcn', {@(options,state,flag) gaplotsafe(options,state,flag),'gaplotbestindiv', 'gaplotbestf'}, ...
-    'Display', 'iter', 'EliteCount', floor(0.01*5000), 'UseParallel', false);
+    1e-4, 'MaxGenerations', 100, 'NonlinearConstraintAlgorithm', 'penalty',...
+    'PopulationSize', 500000, 'PlotFcn', {@(options,state,flag) gaplotsafe(options,state,flag),'gaplotbestindiv', 'gaplotbestf'}, ...
+    'Display', 'iter', 'EliteCount', floor(0.01*500000), 'UseParallel', true);
 [xOpt, DVopt, exitflag] = ga(fitnessFcn, 3, [], [], [], [], LB, UB, [], 1:3, options)
 % delete('gaprogress.txt');
+compTime = toc(t);
+
+
+date = minDate;
+date(6) = date(6) + xOpt(1)*60;
+[Y, Mo, D] = ymd(datetime(date));
+[H, M, S] = hms(datetime(date));
+fprintf(strcat("Optimal Departure Date:  ", datestr([Y Mo D H M S]), "\n"))
+
+date = minDate;
+date(6) = date(6) + xOpt(1)*60 + xOpt(2)*60;
+[Y, Mo, D] = ymd(datetime(date));
+[H, M, S] = hms(datetime(date));
+fprintf(strcat("Optimal Fly-By Date:  ", datestr([Y Mo D H M S]), "\n"))
+
+date = minDate;
+date(6) = date(6) + xOpt(1)*60 + xOpt(2)*60 + xOpt(3)*60;
+[Y, Mo, D] = ymd(datetime(date));
+[H, M, S] = hms(datetime(date));
+fprintf(strcat("Optimal Arrival Date:  ", datestr([Y Mo D H M S]), "\n"))
+
+
+
+
 
 end
 
