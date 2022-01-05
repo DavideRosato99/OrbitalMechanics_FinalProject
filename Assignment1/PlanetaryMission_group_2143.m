@@ -145,11 +145,11 @@ end
 
 
 %% PROPAGATE PERTURBED ORBIT WITH CARTESIAN AND GAUSS EQUATIONS
-%data = propagate(data, settings);
+data = propagate(data, settings);
 
 %% REAL DATA
-load(strcat(pwd,'\functions\initialize\TLEs.mat'));
-data = realData(data, satData, settings);
+%load(strcat(pwd,'\functions\initialize\TLEs.mat'));
+%data = realData(data, satData, settings);
 
 
 
