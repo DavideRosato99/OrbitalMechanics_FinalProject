@@ -149,12 +149,12 @@ if settings.propagation.plot
     plot(TCart/(365*24*3600), abs((vecnorm(perturbationsCart.aJ2+ perturbationsCart.aMOON))...
         - (vecnorm(perturbationsGauss.aJ2+ perturbationsGauss.aMOON)))); grid on;
     xlabel('Time [years]'); ylabel('$err_{acc}$ [$\frac{km}{s^2}$]'); title('$acc_{pert}$ error')
-%     
-%     %%% THETA ERROR
+     
+%    %%%THETA ERROR
 %     figure('Name', 'True Anomaly error', 'NumberTitle', 'off');
 %     plot(TCart/(365*24*3600), abs(orbCart(:, 6) - YGauss(:, 6))*180/pi); grid on;
 %     xlabel('Time [years]'); ylabel('$err_{\theta}$ [km]'); title('$\tehta$ axis error')
-    
+%     
     %%% SEMI-MAJOR AXIS
     figure('Name', 'Semi-major axis evolution', 'NumberTitle', 'off');
     plot(TGauss/(365*24*3600), YGauss(:, 1)); hold on; grid on;
@@ -210,5 +210,40 @@ if settings.propagation.plot
     plot(TGauss/(365*24*3600), movmean(vecnorm(perturbationsGauss.aMOON), 5000), 'LineWidth', 2);
     xlabel('Time [years]'); ylabel('a$_{Moon}$ [$\frac{km}{s^2}$]'); title('Moon acceleration')
     legend('Gauss', 'Filtered', 'interpreter', 'latex')
+%     
+     %%% SEMI-MAJOR AXIS
+    figure('Name', 'Semi-major axis evolution', 'NumberTitle', 'off');
+    plot(TCart/(365*24*3600), orbCart(:, 1)); hold on; grid on;
+    plot(TGauss/(365*24*3600), YGauss(:, 1));
+    xlabel('Time [years]'); ylabel('a [km]'); title('Semi-major axis evolution')
+    legend('Cartesian', 'Gauss', 'interpreter', 'latex')
+    
+    %%% ECCENTRICITY
+    figure('Name', 'Eccentricity evolution', 'NumberTitle', 'off');
+    plot(TCart/(365*24*3600), orbCart(:, 2)); hold on; grid on;
+    plot(TGauss/(365*24*3600), YGauss(:, 2));
+    xlabel('Time [years]'); ylabel('e [-]'); title('Eccentricity evolution')
+    legend('Cartesian', 'Gauss', 'interpreter', 'latex')
+    
+    %%% INCLINATION
+    figure('Name', 'Inclination evolution', 'NumberTitle', 'off');
+    plot(TCart/(365*24*3600), orbCart(:, 3)*180/pi); hold on; grid on;
+    plot(TGauss/(365*24*3600), YGauss(:, 3)*180/pi);
+    xlabel('Time [years]'); ylabel('i [deg]'); title('Inclination evolution')
+    legend('Cartesian', 'Gauss', 'interpreter', 'latex')
+    
+    %%% RAAN
+    figure('Name', 'RAAN evolution', 'NumberTitle', 'off');
+    plot(TCart/(365*24*3600), orbCart(:, 4)*180/pi); hold on; grid on;
+    plot(TGauss/(365*24*3600), YGauss(:, 4)*180/pi);
+    xlabel('Time [years]'); ylabel('$\Omega$ [deg]'); title('RAAN evolution')
+    legend('Cartesian', 'Gauss', 'interpreter', 'latex')
+    
+    %%% ARGUMENT OF PERICENTER
+    figure('Name', 'Argument of pericenter evolution', 'NumberTitle', 'off');
+    plot(TCart/(365*24*3600), orbCart(:, 5)*180/pi); hold on; grid on;
+    plot(TGauss/(365*24*3600), YGauss(:, 5)*180/pi);
+    xlabel('Time [years]'); ylabel('$\omega$ [deg]'); title('Argument of pericenter evolution')
+    legend('Cartesian', 'Gauss', 'interpreter', 'latex')
     
 end
