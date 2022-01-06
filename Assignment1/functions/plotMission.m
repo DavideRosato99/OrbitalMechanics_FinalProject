@@ -17,8 +17,6 @@ function [] = plotMission(data)
 %   MoonPer
 %   par2car
 %
-% NOTE: time can be omitted
-%
 % CONTRIBUTORS:
 %   Rosato Davide               10618468
 %   Saba Mohammadi Yengeje      10789462
