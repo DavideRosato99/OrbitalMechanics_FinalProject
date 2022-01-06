@@ -1,26 +1,37 @@
 function [allSteps] = recallOdeFcn(fun, T, Y, varargin)
-%{
-recallOdeFcn - This function allows to compute some parameters used
-               inside the ODE integrations.
+%
+% recallOdeFcn - This function allows to compute some parameters used
+%                inside the ODE integrations.
+% 
+% INPUTS:
+%         - fun, function, ode function used;
+%         - T, double [n° variation, 1], integration time vector;
+%         - Y, double [n° variation, 16], state matrix,
+%                             [ x y z | u v w | p q r | q0 q1 q2 q3 | m | Ixx Iyy Izz ]:
+%                             * (x y z), NED{north, east, down} horizontal frame;
+%                             * (u v w), body frame velocities;
+%                             * (p q r), body frame angular rates;
+%                             * m , total mass;
+%                             * (Ixx Iyy Izz), Inertias;
+%                             * (q0 q1 q2 q3), attitude unit quaternion.
+% 
+% OUTPUTS:
+%         - allSteps, struct, which contains all the parameters needed.
+% 
+% CALLED FUNCTIONS: -
+% 
+% CONTRIBUTORS:
+%   Rosato Davide               10618468
+%   Saba Mohammadi Yengeje      10789462
+%   Spinelli Jason              10618465
+%   Tagliati Alessia            10635119
+%
+% VERSIONS
+%   2021-10-21: Release
+%
+% -------------------------------------------------------------------------
 
-INPUTS:
-        - fun, function, ode function used;
-        - T, double [n° variation, 1], integration time vector;
-        - Y, double [n° variation, 16], state matrix,
-                            [ x y z | u v w | p q r | q0 q1 q2 q3 | m | Ixx Iyy Izz ]:
-                            * (x y z), NED{north, east, down} horizontal frame;
-                            * (u v w), body frame velocities;
-                            * (p q r), body frame angular rates;
-                            * m , total mass;
-                            * (Ixx Iyy Izz), Inertias;
-                            * (q0 q1 q2 q3), attitude unit quaternion.
-
-OUTPUTS:
-        - allSteps, struct, which contains all the parameters needed.
-
-CALLED FUNCTIONS: -
-
-%}
+%% MAIN ROUTINE
 [~,firstStep] = fun(T(1),Y(1,:),varargin{:});
 
 namesFields = fieldnames(firstStep);

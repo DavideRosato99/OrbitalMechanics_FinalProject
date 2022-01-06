@@ -1,4 +1,29 @@
 function data = propagate(data, settings)
+% propagate - Function to propagate the orbit elements
+%
+% PROTOTYPE:
+%   data = propagate(data, settings)
+%
+% INPUT:
+%   data       struct  [1x1]   general data struct                  [-]
+%   settings   struct  [1x1]   settings struct                      [-]
+%
+% OUTPUT:
+%   data       struct  [1x1]   general data struct                  [-]
+%
+% CALLED FUNCTIONS:  astroConstants, ode_2bp, recallOdeFcn, J2Pert, car2par
+%                    par2car
+%
+% CONTRIBUTORS:
+%   Rosato Davide               10618468
+%   Saba Mohammadi Yengeje      10789462
+%   Spinelli Jason              10618465
+%   Tagliati Alessia            10635119
+%
+% VERSIONS
+%   2021-10-21: Release
+%
+% -------------------------------------------------------------------------
 
 %%
 mu = data.constants.muE;
@@ -59,9 +84,9 @@ size(tspan)
 %%% GAUSS
 options = odeset('RelTol', 1e-13, 'AbsTol', 1e-14);
 [TGauss, YGauss] = ode113(@ode_2bp, tspan, orbIn, options, mu, 'gauss', datetime(date0));
-fprintf('ciao')
+
 perturbationsGauss = recallOdeFcn(@ode_2bp, TGauss, YGauss, mu, 'gauss', datetime(date0));
-fprintf('ciao')
+
 %%% CARTESIAN
 options = odeset('RelTol', 1e-13, 'AbsTol', 1e-14);
 [TCart, YCart] = ode113(@ode_2bp, tspan, x0, options, mu, 'cart', datetime(date0));
@@ -210,7 +235,7 @@ if settings.propagation.plot
     plot(TGauss/(365*24*3600), movmean(vecnorm(perturbationsGauss.aMOON), 5000), 'LineWidth', 2);
     xlabel('Time [years]'); ylabel('a$_{Moon}$ [$\frac{km}{s^2}$]'); title('Moon acceleration')
     legend('Gauss', 'Filtered', 'interpreter', 'latex')
-%     
+    
      %%% SEMI-MAJOR AXIS
     figure('Name', 'Semi-major axis evolution', 'NumberTitle', 'off');
     plot(TCart/(365*24*3600), orbCart(:, 1)); hold on; grid on;

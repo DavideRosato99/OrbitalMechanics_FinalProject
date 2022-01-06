@@ -28,7 +28,7 @@ function [delta_t]= FlyBytof(e_minus, a_minus,e_plus,a_plus, ID)
 %   2021-10-21: Release
 %
 % -------------------------------------------------------------------------
-rsoi = astroConstants(2)*((astroConstants(10+ID)/astroConstants(4)))^(2/5)
+rsoi = astroConstants(2)*((astroConstants(10+ID)/astroConstants(4)))^(2/5);
 
 p_minus = a_minus*(1-e_minus^2);
 p_plus = a_plus*(1-e_plus^2);
@@ -47,4 +47,6 @@ deltat_minus = 1/n_minus * (F_minus-e_minus*sinh(F_minus));
 deltat_plus = 1/n_plus * (F_plus-e_plus*sinh(F_plus));
 
 delta_t = abs(deltat_minus) + abs(deltat_plus);
-delta_t_days = delta_t/(3600*24)
+delta_t_days = delta_t/(3600*24);
+
+fprintf('Total days in SOI: %g\n\n', delta_t_days);

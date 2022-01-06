@@ -14,7 +14,7 @@ function data = GroundTrack(data, settings)
 %   aRepPert   double  [1x1]   Semi-major axis for perturbed rep.
 %                              groundtrack                          [km]
 %   
-% CALLED FUNCTIONS: 
+% CALLED FUNCTIONS: date2mjd2000, GroundTrackCalc 
 %
 % NOTE: 
 %       - if settings.optimal.parallel is set to TRUE, a parallel computing
