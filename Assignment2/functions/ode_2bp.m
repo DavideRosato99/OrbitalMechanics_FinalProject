@@ -21,13 +21,8 @@ function [dx, parout] = ode_2bp(t,x,mu,typeSim,varargin)
 % OUTPUT:
 %   dx       double [6x1]   state vector derivative               [-]
 %
-% CALLED FUNCTIONS: 
-%   astroConstants
-%   date2mjd2000
-%   ephMoon
-%   J2Pert
-%   MoonPer
-%   par2car
+% CALLED FUNCTIONS:  astroConstants, date2mjd2000, ephMoon, J2Pert, MoonPer
+%                    par2car
 %
 % NOTE: time can be omitted
 %
@@ -63,15 +58,17 @@ switch typeSim
             % Position of the Moon
             [r_Moon, ~] = ephMoon(date0mjd2000);
             % Moon perturbation
+            if size(x(1:3), 2) == 3
+                x = x';
+            end
             aMOON = MoonPer(r_Moon', x(1:3));
             % J2 perturbation
             aJ2 = J2Pert(x(1:3), J2, Re, mu);
-
             %%% COMPUTE STATE VECTOR DERIVATIVE
             dx = [x(4:6); -mu/(r^3)*x(1:3) + aJ2 + aMOON];
             
             %%% SAVE IMPORTANT DATA
-            parout.aMOON = aMOON;
+            parout.aMOON(1:3) = aMOON;
             parout.aJ2 = aJ2;
 
         else
@@ -80,8 +77,8 @@ switch typeSim
             dx = [x(4:6); -mu/(r^3)*x(1:3)];
             
             %%% SAVE IMPORTANT DATA
-            parout.aMOON = 0;
-            parout.aJ2 = 0;
+            parout.aMOON = nan(3, 1);
+            parout.aJ2 = nan(3, 1);
 
         end
         
@@ -131,8 +128,8 @@ switch typeSim
             ap_car = 0;
             
             %%% SAVE IMPORTANT DATA
-            parout.aMOON = 0;
-            parout.aJ2 = 0;
+            parout.aMOON = nan(3, 1);
+            parout.aJ2 = nan(3, 1);
 
         end
 

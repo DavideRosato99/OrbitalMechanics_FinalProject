@@ -26,7 +26,7 @@ function [satData] = sgp4Init(satData, epoch)
 %
 % -------------------------------------------------------------------------
 %% INITIALIZATION
-N = size(satData, 1);
+N = size(satData.Name, 2);
 
 % Set all near earth variables to zero
 satData.isimp   = zeros(N, 1); satData.method = char('n'*ones(N, 1)); satData.aycof    = zeros(N, 1);
