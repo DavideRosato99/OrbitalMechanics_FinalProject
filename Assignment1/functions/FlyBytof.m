@@ -1,9 +1,9 @@
-function [delta_t]= FlyBytof(e_minus, a_minus,e_plus,a_plus, date, ID)
+function [delta_t]= FlyBytof(e_minus, a_minus,e_plus,a_plus, ID)
 % FlyBytof - Function to compute the time of flight of the Fly By given the
 % characteristics of the incoming and outgoing hyperbolas
 %
 % PROTOTYPE
-%   [delta_t]= FlyBytof(e_minus, a_minus,e_plus,a_plus, date, ID)
+%   [delta_t]= FlyBytof(e_minus, a_minus,e_plus,a_plus, ID)
 %
 % INPUT:
 %   e_minus   double [1x1]   eccentricity of the incoming hyperbola    [-]
@@ -28,9 +28,6 @@ function [delta_t]= FlyBytof(e_minus, a_minus,e_plus,a_plus, date, ID)
 %   2021-10-21: Release
 %
 % -------------------------------------------------------------------------
-%[kep,ksun] = uplanet(date, ID);
-%[RR,VV] = par2car(kep,astroConstants(10+ID));
-%rr = norm(RR);
 rsoi = astroConstants(2)*((astroConstants(10+ID)/astroConstants(4)))^(2/5)
 
 p_minus = a_minus*(1-e_minus^2);
@@ -50,3 +47,4 @@ deltat_minus = 1/n_minus * (F_minus-e_minus*sinh(F_minus));
 deltat_plus = 1/n_plus * (F_plus-e_plus*sinh(F_plus));
 
 delta_t = abs(deltat_minus) + abs(deltat_plus);
+delta_t_days = delta_t/(3600*24)
