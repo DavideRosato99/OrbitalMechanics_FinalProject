@@ -1,6 +1,6 @@
 % PlanetaryMission_group_2143
 %
-% Main script for group 2143 for Assignment 1 - Planetary Explorer Mission
+% Main script for group 2143 for Assignment 2 - Planetary Mission
 %
 % CONTRIBUTORS:
 %   Rosato Davide          10618468     davide.rosato@mail.polimi.it
@@ -13,9 +13,6 @@
 %
 % VERSIONS
 %   2021-10-21: Release
-%
-% Copyright © 2021, All rights reserved
-% SPDX-License-Identifier: GPL-3.0-or-later
 %
 % -------------------------------------------------------------------------
 

@@ -1,6 +1,6 @@
 % InterplanetaryMission_group_2143
 %
-% Main script for group 2143 for Assignment 1
+% Main script for group 2143 for Assignment 1 - Interplanetary Mission
 %
 % CONTRIBUTORS:
 %   Rosato Davide          10618468     davide.rosato@mail.polimi.it
