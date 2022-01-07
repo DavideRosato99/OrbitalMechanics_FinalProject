@@ -1,5 +1,4 @@
-%
-% PlanetaryMission_group_2143
+% InterplanetaryMission_group_2143
 %
 % Main script for group 2143 for Assignment 1
 %
