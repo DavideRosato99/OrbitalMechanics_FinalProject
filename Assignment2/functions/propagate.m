@@ -133,7 +133,7 @@ if settings.propagation.plot
     Re = astroConstants(23);
     [Xe, Ye, Ze] = sphere(100);
     Xe = Re*Xe; Ye = Re*Ye; Ze = Re*Ze;
-    earthPNG = imread('earth.png');
+    earthPNG = imread('earth_map.jpg');
     surf(Xe, Ye, Ze, 'CData', flipud(earthPNG), 'FaceColor', 'texture', 'edgecolor', 'none');
     grid on
     

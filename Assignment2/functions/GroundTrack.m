@@ -135,7 +135,7 @@ if settings.groundtracks.plot
         set(gca,'YTick', [-90:30:90], 'YTickMode', 'manual');
         xlim([-180,180]); ylim([-90,90]);
         
-        image_file = 'earth.png';
+        image_file = 'earth_map.jpg';
         cdata      = flip(imread(image_file));
         imagesc([-180,180],[-90, 90],cdata);
         
@@ -163,7 +163,7 @@ if settings.groundtracks.plot
         set(gca, 'YTick', [-90:30:90], 'YTickMode', 'manual');
         xlim([-180,180]); ylim([-90,90]);
         
-        image_file = 'earth.png';
+        image_file = 'earth_map.jpg';
         cdata      = flip(imread(image_file));
         imagesc([-180,180], [-90, 90], cdata);
         
@@ -192,7 +192,7 @@ if settings.groundtracks.plot
     set(gca,'YTick', [-90:30:90], 'YTickMode', 'manual');
     xlim([-180,180]); ylim([-90,90]);
 
-    image_file = 'earth.png';
+    image_file = 'earth_map.jpg';
     cdata      = flip(imread(image_file));
     imagesc([-180,180],[-90, 90],cdata);
 
@@ -219,7 +219,7 @@ if settings.groundtracks.plot
     set(gca,'YTick', [-90:30:90], 'YTickMode', 'manual');
     xlim([-180,180]); ylim([-90,90]);
 
-    image_file = 'earth.png';
+    image_file = 'earth_map.jpg';
     cdata      = flip(imread(image_file));
     imagesc([-180,180],[-90, 90],cdata);
 

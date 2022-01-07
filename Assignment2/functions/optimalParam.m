@@ -268,7 +268,7 @@ if settings.optimal.plot
     Re = astroConstants(23);
     [Xe, Ye, Ze] = sphere(100);
     Xe = Re*Xe; Ye = Re*Ye; Ze = Re*Ze;
-    earthPNG = imread('earth.png');
+    earthPNG = imread('earth_map.jpg');
  
     %%% TOTAL TLEs AROUND EARTH
     figure('Name', 'Objects orbiting the earth', 'NumberTitle', 'off');
