@@ -11,7 +11,7 @@ TEAM MEMBERS:
   
 
 ## Assignment 1
-Planetary Mission
+Interplanetary Mission
 
 ## Assignment 2
-Interplanetary Mission
+Planetary Mission
